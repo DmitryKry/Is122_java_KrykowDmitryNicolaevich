@@ -12,4 +12,6 @@ public interface UserService {
     User FindUserByEmailAndPassword(String email, String password);
     User UpdateUser(User user);
     void DeleteUser(String email);
+    User getInMemoryUser();
+    void setInMemoryUser(User user);
 }

@@ -1,6 +1,7 @@
 package Dmitro.ru.SimpleChatNewJava17.service.impl;
 
 import Dmitro.ru.SimpleChatNewJava17.model.User;
+import Dmitro.ru.SimpleChatNewJava17.repository.InMemoryUserDAO;
 import Dmitro.ru.SimpleChatNewJava17.repository.UserRepository;
 import Dmitro.ru.SimpleChatNewJava17.service.UserService;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.List;
 @Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-
+    private final InMemoryUserDAO userDAO;
     @Override
     public List<User> FindAllUsers() {
         return userRepository.findAll();
@@ -67,5 +68,15 @@ public class UserServiceImpl implements UserService {
         if (user != null) {
             userRepository.delete(user);
         }
+    }
+
+    @Override
+    public User getInMemoryUser() {
+        return userDAO.GetInMemoryUserDAO();
+    }
+
+    @Override
+    public void setInMemoryUser(User user) {
+        userDAO.SetInMemoryUserDAO(user);
     }
 }

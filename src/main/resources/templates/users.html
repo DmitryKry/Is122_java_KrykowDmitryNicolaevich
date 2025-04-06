@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Пользователи</title>
+        <link rel="stylesheet" th:href="@{/style.css}">
+    </head>
+    <body>
+    <div th:id="ALL">
+        <div th:id="Menu">
+            <div th:id="UserText">
+                <a th:text="${user != null} ? ${user.getName()} + ' ' + ${user.getLastName()} : 'Войдите в аккаунт'"></a>
+            </div>
+            <div th:id="Entrance">
+                <a th:href="@{/api/v1/entrance}">Вход</a>
+            </div>
+            <div th:id="User">
+                <a th:href="@{/api/v1/users}">Пользователь</a>
+            </div>
+        </div>
+        <div th:id="GeneralInfo">
+            <h2 th:id="COUNT"
+                th:text="'Количество пользователей' + ' - ' + (${users != null} ? ${users.size()} : 0)"></h2>
+            <div th:id="Search">
+                <form th:action="@{/api/v1/findByEmail}" method="post">
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email">
+                    <button type="submit">Найти</button>
+                </form>
+                <div th:if="${error}" style="color: red;">
+                    <p th:text="${error}"></p>
+                </div>
+                <a th:href="@{/api/v1/users}" class="btn-back">Вернуться к списку</a>
+            </div>
+            <ul>
+                <li th:each="u : ${users}">
+                    <div th:id="Transfer">
+                        <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
+                         (<span th:text="${u.email}"></span>)
+                        <span th:text="'возраст - ' + ${u.getAge()}"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    </body>
+</html>

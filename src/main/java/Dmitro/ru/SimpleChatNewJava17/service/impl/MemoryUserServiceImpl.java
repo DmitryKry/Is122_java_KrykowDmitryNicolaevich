@@ -46,4 +46,13 @@ public class MemoryUserServiceImpl implements UserService {
     public void DeleteUser(String email) {
         userDAO.DeleteUser(email);
     }
+
+    @Override
+    public User getInMemoryUser() {
+        return null;
+    }
+
+    @Override
+    public void setInMemoryUser(User user) {
+    }
 }

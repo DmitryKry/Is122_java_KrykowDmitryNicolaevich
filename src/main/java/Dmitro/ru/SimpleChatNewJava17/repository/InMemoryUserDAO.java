@@ -10,6 +10,18 @@ import java.util.stream.IntStream;
 @Repository
 public class InMemoryUserDAO {
     private final List<User> users = new ArrayList<>();
+    static private User user;
+    public void SetInMemoryUserDAO(User user) {
+        InMemoryUserDAO.user = user;
+    }
+
+    public User GetInMemoryUserDAO() {
+        if (InMemoryUserDAO.user != null) {
+            return InMemoryUserDAO.user;
+        }else {
+            return null;
+        }
+    }
 
     public List<User> FindAllUsers() {
         return users;
