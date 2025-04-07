@@ -2,6 +2,7 @@ package Dmitro.ru.SimpleChatNewJava17.controller;
 
 import Dmitro.ru.SimpleChatNewJava17.model.User;
 import Dmitro.ru.SimpleChatNewJava17.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,17 +47,47 @@ public class UserController {
 
     @PostMapping("/entranceByEmail")
     public String EntranceByEmail(@RequestParam String email,
-                                  @RequestParam String password, Model model) {
+                                  @RequestParam String password,
+                                  Model model,
+                                  HttpSession session) {
         User user = userService.FindUserByEmailAndPassword(email, password);
 
         // 2. Обработка результата
         if (user != null) {
             userService.setInMemoryUser(user);
             model.addAttribute("user", user);
+            session.setAttribute("user", user);
             return "entrance"; // страница после успешного входа
         } else {
             model.addAttribute("error", "Неверный email или пароль");
             return "entrance"; // вернуться на страницу входа с ошибкой
+        }
+    }
+
+    @GetMapping("/registrationForm")
+    public String RegistrationForm(Model model) {
+        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("newUser", new User());
+        return "registration";
+    }
+
+    @PostMapping("/registration")
+    public String Registration(@ModelAttribute("newUser") User newUser,
+                               Model model,
+                               HttpSession session,
+                               @RequestParam("testPassword") String testPassword) {
+        if(!testPassword.equals(newUser.getPassword())) {
+            model.addAttribute("error", "Пароли не сходяться!");
+            return "registration";
+        }
+        else if (userService.FindUserByEmail(newUser.getEmail()) == null) {
+            model.addAttribute("newUser", newUser);
+            session.setAttribute("user", newUser);
+            userService.SaveUser(newUser);
+            return "entrance";
+        } else {
+            model.addAttribute("error", "Такой email уже зарегистрирован!");
+            return "registration";
         }
     }
 

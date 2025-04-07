@@ -95,6 +95,22 @@ body{
     color: white;
 }
 
+#GeneralInfo #HrefForRegisration{
+    transition: 0.5s;
+    border: 0px solid black;
+    height: 5.2%;
+    border-radius: 10% / 25%;
+    margin-top: 0.05%;
+    padding-top: 1%;
+    text-decoration: none; /* Убирает подчёркивание */
+    color: inherit;
+}
+
+#GeneralInfo #HrefForRegisration:hover{
+    background-color: black;
+    color: #fcfcfc;
+}
+
 .form-group{
     padding: 3%;
 }

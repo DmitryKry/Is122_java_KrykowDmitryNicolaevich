@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>Пользователи</title>
+        <title>Аутентификация</title>
         <link rel="stylesheet" th:href="@{/style.css}">
     </head>
     <body>
@@ -32,6 +32,9 @@
                     </div>
                     <button type="submit">Войти</button>
                 </form>
+                <div th:id="HrefForRegisration">
+                    <a th:href="@{/api/v1/registrationForm}">Регистрация</a>
+                </div>
                 <div th:if="${error}" style="color: red;">
                     <p th:text="${error}"></p>
                 </div>

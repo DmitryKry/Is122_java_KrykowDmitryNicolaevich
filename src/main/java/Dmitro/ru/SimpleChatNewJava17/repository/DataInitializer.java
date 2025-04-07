@@ -64,7 +64,7 @@ public class DataInitializer {
                 users[i].setGender("woman");
                 users[i].setCity("Navashino");
                 users[i].setEmail("Nasty277" + System.currentTimeMillis() + "@mail.ru");
-                users[i].setPassword("1dq2daw2");
+                    users[i].setPassword("1dq2daw2");
                 repository.save(users[i]);
             }
 
