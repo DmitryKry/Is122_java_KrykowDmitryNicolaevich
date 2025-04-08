@@ -1,6 +1,8 @@
 package Dmitro.ru.SimpleChatNewJava17.service;
 
 import Dmitro.ru.SimpleChatNewJava17.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 

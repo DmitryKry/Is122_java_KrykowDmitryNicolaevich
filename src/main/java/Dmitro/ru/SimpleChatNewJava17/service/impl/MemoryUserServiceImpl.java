@@ -4,6 +4,8 @@ import Dmitro.ru.SimpleChatNewJava17.model.User;
 import Dmitro.ru.SimpleChatNewJava17.repository.InMemoryUserDAO;
 import Dmitro.ru.SimpleChatNewJava17.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -6,6 +6,8 @@ import Dmitro.ru.SimpleChatNewJava17.repository.UserRepository;
 import Dmitro.ru.SimpleChatNewJava17.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

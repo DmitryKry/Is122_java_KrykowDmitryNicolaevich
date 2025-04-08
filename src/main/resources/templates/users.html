@@ -25,12 +25,12 @@
                     <form th:action="@{/api/v1/findByEmail}" method="post">
                         <label for="email">Email:</label>
                         <input type="text" id="email" name="email">
-                        <button type="submit">Найти</button>
+                        <br>
+                        <button type="submit" th:class="ButtonPost">Найти</button>
                     </form>
                     <div th:if="${error}" style="color: red;">
                         <p th:text="${error}"></p>
                     </div>
-                    <a th:href="@{/api/v1/users}" class="btn-back">Вернуться к списку</a>
                 </div>
                 <ul>
                     <li th:each="u : ${users}">
@@ -38,9 +38,15 @@
                             <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
                              (<span th:text="${u.email}"></span>)
                             <span th:text="'возраст - ' + ${u.getAge()}"></span>
+                            <span th:text="${u.gender.equals('male')} ? 'M' : 'Ж'"></span>
                         </div>
                     </li>
                 </ul>
+                <div th:id="pagination">
+                    <button></button>
+                    <button></button>
+                </div>
+
             </div>
         </div>
     </body>

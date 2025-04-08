@@ -5,6 +5,8 @@ import Dmitro.ru.SimpleChatNewJava17.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,13 +26,15 @@ public class UserController {
     @GetMapping("/users")
     public String FindAllUsers(Model model) {
         List<User> users = userService.FindAllUsers();
+
+        // Если пользователи есть, добавляем их в модель
         if (!users.isEmpty()) {
             model.addAttribute("user", userService.getInMemoryUser());
-            model.addAttribute("users", users);
+            model.addAttribute("users", users);  // Получаем список пользователей из страницы// Общее количество страниц
         } else {
             model.addAttribute("user", "No users found");
         }
-        return "users";
+        return "users"; // Возвращаем имя шаблона
     }
 
     @GetMapping("/entrance")
@@ -94,6 +98,11 @@ public class UserController {
     @PostMapping("/findByEmail")
     public String FindUserByEmail(@RequestParam("email") String email, Model model) {
         try {
+            if(email.isEmpty()){
+                model.addAttribute("users", userService.FindAllUsers());
+                model.addAttribute("user", userService.getInMemoryUser());
+                return "users";
+            }
             List<User> users = userService.FindAllUsers();
             List<User> findOfUsers = new ArrayList<>();
             int count = 0;

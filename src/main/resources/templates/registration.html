@@ -40,7 +40,10 @@
                     </div>
                     <div class="form-group">
                         <label for="gender">Гендер:</label>
-                        <input type="text" id="gender" th:field="*{gender}" required>
+                        <select id="gender" th:field="*{gender}" required>
+                            <option value="male">Мужской</option>
+                            <option value="female">Женский</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="city">Город:</label>
@@ -54,7 +57,7 @@
                         <label for="testPassword">Repeat password:</label>
                         <input type="password" id="testPassword" th:name="testPassword" required>
                     </div>
-                    <button type="submit">Зарегистрироваться</button>
+                    <button type="submit" th:class="ButtonPost">Зарегистрироваться</button>
                 </form>
             </div>
         </div>
