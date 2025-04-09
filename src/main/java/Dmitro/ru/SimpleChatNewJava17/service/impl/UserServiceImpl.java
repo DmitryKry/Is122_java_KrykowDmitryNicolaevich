@@ -27,7 +27,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+<<<<<<< HEAD
     public Page<User> FindAllUsers(int page, int size) {
+=======
+    public Page<User> FindAllUsers(int page, int size){
+>>>>>>> 853c40d0dacb3b913cde403bcdf76fc1da8b6cac
         Pageable pageable = PageRequest.of(page, size);
         return userRepository.findAll(pageable);
     }
