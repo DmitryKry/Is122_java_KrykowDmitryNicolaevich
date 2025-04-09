@@ -24,13 +24,22 @@ public class UserController {
 
     private final UserService userService;
     @GetMapping("/users")
-    public String FindAllUsers(Model model) {
-        List<User> users = userService.FindAllUsers();
+    public String FindAllUsers(@RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "1") int size,
+                               Model model) {
+        List<User> users = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            if ((i + page) < i + userService.FindAllUsers().size()) users.add(userService.FindAllUsers().get(i + page));
+        }
 
         // Если пользователи есть, добавляем их в модель
         if (!users.isEmpty()) {
             model.addAttribute("user", userService.getInMemoryUser());
-            model.addAttribute("users", users);  // Получаем список пользователей из страницы// Общее количество страниц
+            model.addAttribute("users", users);
+            model.addAttribute("allUsers", userService.FindAllUsers());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("pageSize", size);// Получаем список пользователей из страницы// Общее количество страниц
         } else {
             model.addAttribute("user", "No users found");
         }

@@ -20,6 +20,11 @@ public class MemoryUserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<User> FindAllUsers(int page, int size){
+        return null;
+    }
+
+    @Override
     public User FindUserById(long id) {
         return userDAO.FindUserById(id);
     }
