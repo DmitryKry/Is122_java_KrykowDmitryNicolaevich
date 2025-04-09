@@ -6,6 +6,7 @@ import Dmitro.ru.SimpleChatNewJava17.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,9 +21,15 @@ public class MemoryUserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<User> FindAllUsers(int page, int size){
+        return null;
+    }
+
+    @Override
     public User FindUserById(long id) {
         return userDAO.FindUserById(id);
     }
+
 
     @Override
     public User FindUserByEmail(String email) {
