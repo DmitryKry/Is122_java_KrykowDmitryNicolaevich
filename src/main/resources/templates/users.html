@@ -20,7 +20,7 @@
             </div>
             <div th:id="GeneralInfo">
                 <h2 th:id="COUNT"
-                    th:text="'Количество пользователей' + ' - ' + (${users != null} ? ${users.size()} : 0)"></h2>
+                    th:text="'Количество пользователей' + ' - ' + (${allUsers != null} ? ${allUsers.size()} : 0)"></h2>
                 <div th:id="Search">
                     <form th:action="@{/api/v1/findByEmail}" method="post">
                         <label for="email">Email:</label>
@@ -43,10 +43,18 @@
                     </li>
                 </ul>
                 <div th:id="pagination">
-                    <button></button>
-                    <button></button>
-                </div>
+                    <span th:if="${currentPage > 0}">
+                        <a th:href="@{/api/v1/users(page=${currentPage - 1}, size=${1})}"></a>
+                    </span>
 
+                    <span th:if="${currentPage < 1}">
+                        <a th:href="@{/api/v1/users(page=${currentPage - 0}, size=${1})}"></a>
+                    </span>
+
+                    <span th:if="${currentPage < totalPages - 1}">
+                        <a th:href="@{/api/v1/users(page=${currentPage + 1}, size=${1})}"></a>
+                    </span>
+                </div>
             </div>
         </div>
     </body>
