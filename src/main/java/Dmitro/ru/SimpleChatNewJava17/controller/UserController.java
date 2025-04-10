@@ -26,22 +26,34 @@ public class UserController {
     @GetMapping("/users")
     public String FindAllUsers(@RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "1") int size,
-                               Model model) {
+                               Model model,
+                               HttpSession session) {
         List<User> users = new ArrayList<>();
+        List<User> findAllUsers = new ArrayList<>();
         Page<User> usersPage = userService.FindAllUsers(page, size);
-
-        for (int i = 0; i < 10; i++) {
-            if ((i + page) < userService.FindAllUsers().size())
-                users.add(userService.FindAllUsers().get(i + page));
+        if (session.getAttribute("users") == null) {
+            for (int i = 0; i < 10; i++) {
+                if ((i + page) < userService.FindAllUsers().size())
+                    users.add(userService.FindAllUsers().get(i + page));
+            }
+        }
+        else {
+            findAllUsers = (List<User>) session.getAttribute("users");
+            for (int i = 0; i < 10; i++) {
+                if ((i + page) < findAllUsers.size())
+                    users.add(findAllUsers.get(i + page));
+            }
         }
         // Если пользователи есть, добавляем их в модель
         if (!users.isEmpty()) {
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("allUsers", userService.FindAllUsers());
             model.addAttribute("users", users);  // Содержимое текущей страницы
-            model.addAttribute("currentPage", page);  // Текущая страница
-            model.addAttribute("totalPages", usersPage.getTotalPages());  // Общее количество страниц
-            model.addAttribute("totalItems", usersPage.getTotalElements());  // Получаем список пользователей из страницы// Общее количество страниц
+            model.addAttribute("currentPage", page);
+            if (session.getAttribute("users") == null)
+                model.addAttribute("totalPages", usersPage.getTotalPages());
+            else
+                model.addAttribute("totalPages", findAllUsers.size());// Общее количество страниц// Получаем список пользователей из страницы// Общее количество страниц
         } else {
             model.addAttribute("user", "No users found");
         }
@@ -59,6 +71,7 @@ public class UserController {
         }
         return "entrance";
     }
+
 
     @PostMapping("/entranceByEmail")
     public String EntranceByEmail(@RequestParam String email,
@@ -86,6 +99,7 @@ public class UserController {
         return "registration";
     }
 
+
     @PostMapping("/registration")
     public String Registration(@ModelAttribute("newUser") User newUser,
                                Model model,
@@ -107,11 +121,21 @@ public class UserController {
     }
 
     @PostMapping("/findByEmail")
-    public String FindUserByEmail(@RequestParam("email") String email, Model model) {
+    public String FindUserByEmail(@RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "10") int size,
+                                  @RequestParam("email") String email,
+                                  Model model,
+                                  HttpSession session) {
         try {
+            Page<User> usersPage = userService.FindAllUsers(page, size);
             if(email.isEmpty()){
-                model.addAttribute("users", userService.FindAllUsers());
+                session.setAttribute("users", null);
+                model.addAttribute("users", usersPage.getContent());
                 model.addAttribute("user", userService.getInMemoryUser());
+                model.addAttribute("allUsers", userService.FindAllUsers());
+                model.addAttribute("currentPage", page);  // Текущая страница
+                model.addAttribute("totalPages", usersPage.getTotalPages());  // Общее количество страниц
+                model.addAttribute("totalItems", usersPage.getTotalElements());
                 return "users";
             }
             List<User> users = userService.FindAllUsers();
@@ -139,7 +163,12 @@ public class UserController {
             }
             else {
                 model.addAttribute("users", findOfUsers);
+                session.setAttribute("users", findOfUsers);
                 model.addAttribute("user", userService.getInMemoryUser());
+                model.addAttribute("allUsers", userService.FindAllUsers());
+                model.addAttribute("currentPage", page);  // Текущая страница
+                model.addAttribute("totalPages", usersPage.getTotalPages());  // Общее количество страниц
+                model.addAttribute("totalItems", usersPage.getTotalElements());
             }
             return "users";
         } catch (Exception e) {
