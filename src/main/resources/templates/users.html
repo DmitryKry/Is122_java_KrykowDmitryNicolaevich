@@ -42,26 +42,9 @@
                         </div>
                     </li>
                 </ul>
-<<<<<<< HEAD
-                <div th:id="pagination">
-                    <span th:if="${currentPage > 0}">
-                        <a th:href="@{/api/v1/users(page=${currentPage - 1}, size=${1})}"></a>
-                    </span>
-=======
                 <div class="pagination">
                     <a th:href="@{/api/v1/users(page=${currentPage - 1})}" th:if="${currentPage > 0}">Previous</a>
-                    <span th:text="${currentPage + 1}">1</span> / <span th:text="${totalPages}">1</span>
                     <a th:href="@{/api/v1/users(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">Next</a>
-                </div>
->>>>>>> 853c40d0dacb3b913cde403bcdf76fc1da8b6cac
-
-                    <span th:if="${currentPage < 1}">
-                        <a th:href="@{/api/v1/users(page=${currentPage - 0}, size=${1})}"></a>
-                    </span>
-
-                    <span th:if="${currentPage < totalPages - 1}">
-                        <a th:href="@{/api/v1/users(page=${currentPage + 1}, size=${1})}"></a>
-                    </span>
                 </div>
             </div>
         </div>

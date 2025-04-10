@@ -25,36 +25,23 @@ public class UserController {
     private final UserService userService;
     @GetMapping("/users")
     public String FindAllUsers(@RequestParam(defaultValue = "0") int page,
-<<<<<<< HEAD
                                @RequestParam(defaultValue = "1") int size,
                                Model model) {
         List<User> users = new ArrayList<>();
+        Page<User> usersPage = userService.FindAllUsers(page, size);
 
         for (int i = 0; i < 10; i++) {
-            if ((i + page) < i + userService.FindAllUsers().size()) users.add(userService.FindAllUsers().get(i + page));
+            if ((i + page) < userService.FindAllUsers().size())
+                users.add(userService.FindAllUsers().get(i + page));
         }
-=======
-                               @RequestParam(defaultValue = "10") int size,
-                               Model model) {
-        List<User> users = userService.FindAllUsers();
-        Page<User> usersPage = userService.FindAllUsers(page, size);
->>>>>>> 853c40d0dacb3b913cde403bcdf76fc1da8b6cac
-
         // Если пользователи есть, добавляем их в модель
         if (!users.isEmpty()) {
             model.addAttribute("user", userService.getInMemoryUser());
-<<<<<<< HEAD
-            model.addAttribute("users", users);
             model.addAttribute("allUsers", userService.FindAllUsers());
-            model.addAttribute("currentPage", page);
-            model.addAttribute("pageSize", size);// Получаем список пользователей из страницы// Общее количество страниц
-=======
-            model.addAttribute("allUsers", userService.FindAllUsers());
-            model.addAttribute("users", usersPage.getContent());  // Содержимое текущей страницы
+            model.addAttribute("users", users);  // Содержимое текущей страницы
             model.addAttribute("currentPage", page);  // Текущая страница
             model.addAttribute("totalPages", usersPage.getTotalPages());  // Общее количество страниц
             model.addAttribute("totalItems", usersPage.getTotalElements());  // Получаем список пользователей из страницы// Общее количество страниц
->>>>>>> 853c40d0dacb3b913cde403bcdf76fc1da8b6cac
         } else {
             model.addAttribute("user", "No users found");
         }
