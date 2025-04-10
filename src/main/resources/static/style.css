@@ -144,34 +144,28 @@ a{
     transform: translateY(-2.5px)
 }
 
-#GeneralInfo #pagination > button {
-    background-color: black;
-    color: white;
-    height: 20px;
-    width: 100px;
-    border-radius: 50px / 50px;
-    padding-bottom: 2px;
+#GeneralInfo #pagination{
     position: absolute;
-    left: 43%;
+    left: 48%;
+    bottom: 0.2%;
+    display: flex; /* Используем flexbox для выравнивания элементов по горизонтали */
+    justify-content: center;
+    gap: 50%;
 }
 
-#GeneralInfo #pagination > button:first-child{
-    bottom: 1%;
+#GeneralInfo #pagination > a {
+    background-color: white;
+    display: inline-block;
+    border-radius: 100% / 100%;
+    padding: 300%;
+    border: black solid 1px;
+    transition: 0.5s;
 }
 
-#GeneralInfo #pagination > button:last-child{
-    bottom: 4%;
+#GeneralInfo #pagination > a:hover{
+    background-color: black;
 }
 
-#GeneralInfo #pagination > button:active{
-    background-color: white !important;
-    color: black !important;
-}
-
-#GeneralInfo #pagination button:hover{
-    background-color: #373737;
-    color: white;
-}
 
 #GeneralInfo .ButtonPost{
     background-color: white;

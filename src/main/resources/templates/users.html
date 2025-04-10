@@ -42,9 +42,11 @@
                         </div>
                     </li>
                 </ul>
-                <div class="pagination">
-                    <a th:href="@{/api/v1/users(page=${currentPage - 1})}" th:if="${currentPage > 0}">Previous</a>
-                    <a th:href="@{/api/v1/users(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">Next</a>
+                <div id="pagination">
+                    <a th:href="@{/api/v1/users(page=${currentPage - 1})}" th:if="${currentPage > 0}"></a>
+                    <a th:href="@{/api/v1/users(page=${currentPage})}" th:if="${currentPage < 1}"></a>
+                    <a th:href="@{/api/v1/users(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}"></a>
+                    <a th:href="@{/api/v1/users(page=${currentPage})}" th:if="${currentPage == totalPages - 1}"></a>
                 </div>
             </div>
         </div>
