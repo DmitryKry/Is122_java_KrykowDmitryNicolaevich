@@ -162,6 +162,13 @@ public class UserController {
             }
             if (findOfUsers.isEmpty()) {
                 model.addAttribute("error", "Пользователь с email '" + email + "' не найден.");
+                model.addAttribute("users", findOfUsers);
+                session.setAttribute("users", findOfUsers);
+                model.addAttribute("user", userService.getInMemoryUser());
+                model.addAttribute("allUsers", findOfUsers);
+                model.addAttribute("currentPage", page);  // Текущая страница
+                model.addAttribute("totalPages", usersPage.getTotalPages());  // Общее количество страниц
+                model.addAttribute("totalItems", usersPage.getTotalElements());
             }
             else {
                 model.addAttribute("users", findOfUsers);
