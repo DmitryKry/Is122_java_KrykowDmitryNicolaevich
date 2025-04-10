@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Аутентификация</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+    <body>
+        <div th:id="ALL">
+            <div th:id="Menu">
+                <div th:id="UserText">
+                    <a th:text="${user != null} ? ${user.getName()} + ' ' + ${user.getLastName()} : 'Войдите в аккаунт'"></a>
+                </div>
+                <div th:id="Entrance">
+                    <a th:href="@{/api/v1/entrance}">Вход</a>
+                </div>
+                <div th:id="User">
+                    <a th:href="@{/api/v1/users}">Пользователь</a>
+                </div>
+            </div>
+            <div th:id="GeneralInfo">
+                <h1 th:text="${userClick != null} ? ${userClick.getName()} + ' ' + ${userClick.getLastName()} : 'Такого пользователя не существует'"></h1>
+            </div>
+        </div>
+    </body>
+</html>

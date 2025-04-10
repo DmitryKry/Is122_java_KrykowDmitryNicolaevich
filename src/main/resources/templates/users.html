@@ -35,10 +35,12 @@
                 <ul>
                     <li th:each="u : ${users}">
                         <div th:id="Transfer">
-                            <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
-                             (<span th:text="${u.email}"></span>)
-                            <span th:text="'возраст - ' + ${u.getAge()}"></span>
-                            <span th:text="${u.gender.equals('male')} ? 'M' : 'Ж'"></span>
+                            <a th:href="@{/api/v1/users/{id}(id=${u.id})}">
+                                <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
+                                 (<span th:text="${u.email}"></span>)
+                                <span th:text="'возраст - ' + ${u.getAge()}"></span>
+                                <span th:text="${u.gender.equals('male')} ? 'M' : 'Ж'"></span>
+                            </a>
                         </div>
                     </li>
                 </ul>

@@ -47,7 +47,9 @@ public class UserController {
         // Если пользователи есть, добавляем их в модель
         if (!users.isEmpty()) {
             model.addAttribute("user", userService.getInMemoryUser());
-            model.addAttribute("allUsers", userService.FindAllUsers());
+            if (session.getAttribute("users") == null)
+                model.addAttribute("allUsers", userService.FindAllUsers());
+            else model.addAttribute("allUsers", findAllUsers);
             model.addAttribute("users", users);  // Содержимое текущей страницы
             model.addAttribute("currentPage", page);
             if (session.getAttribute("users") == null)
@@ -165,7 +167,7 @@ public class UserController {
                 model.addAttribute("users", findOfUsers);
                 session.setAttribute("users", findOfUsers);
                 model.addAttribute("user", userService.getInMemoryUser());
-                model.addAttribute("allUsers", userService.FindAllUsers());
+                model.addAttribute("allUsers", findOfUsers);
                 model.addAttribute("currentPage", page);  // Текущая страница
                 model.addAttribute("totalPages", usersPage.getTotalPages());  // Общее количество страниц
                 model.addAttribute("totalItems", usersPage.getTotalElements());
@@ -187,6 +189,14 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving user: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/users/{id}")
+    public String ShapeFormForId(@PathVariable int id, Model model) {
+        User userClick = userService.FindUserById(id);
+        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("userClick", userClick);
+        return "PageOfUser";
     }
 
     @GetMapping("/{email}")

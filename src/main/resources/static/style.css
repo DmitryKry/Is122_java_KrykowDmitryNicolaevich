@@ -1,7 +1,7 @@
 body{
     color: black;
     background-color: #fcfcfc;
-    /*user-select: none;*/
+    user-select: none;
 }
 
 a{
@@ -99,11 +99,22 @@ a{
 #GeneralInfo #Transfer{
     border-top: 1px solid black;
     height: auto;
-    padding: 2%;
     position: relative;
     width: auto;
     transition: 0.5s;
     color: black;
+}
+
+#GeneralInfo #Transfer > a{
+    display: inline-block;
+    color: black;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    width: 100%;
+}
+
+#GeneralInfo #Transfer:hover > a{
+    color: white;
 }
 
 #GeneralInfo #Transfer:hover{
