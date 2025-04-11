@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Аутентификация</title>
+    <title>Сообщения</title>
     <link rel="stylesheet" th:href="@{/style.css}">
 </head>
     <body>
@@ -20,6 +20,13 @@
             </div>
             <div th:id="GeneralInfo">
                 <h1 th:text="${userClick != null} ? ${userClick.getName()} + ' ' + ${userClick.getLastName()} : 'Такого пользователя не существует'"></h1>
+                <div id="MessageForm">
+
+                </div>
+                <form th:action="@{/api/v1/users/message}" method="post">
+                    <input th:id="message" type="text" name="message" required>
+                    <button th:id="sendMessage" type="submit">Отправить</button>
+                </form>
             </div>
         </div>
     </body>

@@ -188,21 +188,19 @@ public class UserController {
         }
     }
 
-    @PostMapping("saveUser")
-    public ResponseEntity<String> SaveUser(@RequestBody User user) {
-        try {
-            userService.SaveUser(user);
-            return ResponseEntity.ok("Success save user");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving user: " + e.getMessage());
-        }
-    }
-
     @GetMapping("/users/{id}")
-    public String ShapeFormForId(@PathVariable int id, Model model) {
+    public String ShapeFormForId(@PathVariable int id, Model model, HttpSession session) {
         User userClick = userService.FindUserById(id);
+        session.setAttribute("companion", userClick);
         model.addAttribute("user", userService.getInMemoryUser());
         model.addAttribute("userClick", userClick);
+        return "PageOfUser";
+    }
+
+    @PostMapping("/users/message")
+    public String InputMessages(@RequestParam("message") String message, Model model, HttpSession session) {
+        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("userClick", session.getAttribute("companion"));
         return "PageOfUser";
     }
 
