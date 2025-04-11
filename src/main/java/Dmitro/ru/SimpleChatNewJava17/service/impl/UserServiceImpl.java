@@ -1,7 +1,9 @@
 package Dmitro.ru.SimpleChatNewJava17.service.impl;
 
+import Dmitro.ru.SimpleChatNewJava17.model.Message;
 import Dmitro.ru.SimpleChatNewJava17.model.User;
 import Dmitro.ru.SimpleChatNewJava17.repository.InMemoryUserDAO;
+import Dmitro.ru.SimpleChatNewJava17.repository.MessageRepository;
 import Dmitro.ru.SimpleChatNewJava17.repository.UserRepository;
 import Dmitro.ru.SimpleChatNewJava17.service.UserService;
 import lombok.AllArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final InMemoryUserDAO userDAO;
+    private final MessageRepository messageRepository;
     @Override
     public List<User> FindAllUsers() {
         return userRepository.findAll();
@@ -30,6 +33,23 @@ public class UserServiceImpl implements UserService {
     public Page<User> FindAllUsers(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return userRepository.findAll(pageable);
+    }
+
+    public Message FindMessageById(long id) {
+        return messageRepository.findById(id).orElse(null);
+    }
+
+    public Message AddMessage(Message message) {
+        return messageRepository.save(message);
+    }
+
+    public Message UpdateMessage(long id, String newMessageContent) {
+        Message existingMessage = messageRepository.findById(id).orElse(null);
+        if (existingMessage != null) {
+            existingMessage.setMessage(existingMessage.getMessage() + "\n" + newMessageContent);
+            return messageRepository.save(existingMessage);
+        }
+        return null;
     }
 
     @Override
