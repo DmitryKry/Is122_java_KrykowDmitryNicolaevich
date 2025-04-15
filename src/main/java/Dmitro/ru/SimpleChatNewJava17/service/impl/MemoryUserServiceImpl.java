@@ -1,5 +1,6 @@
 package Dmitro.ru.SimpleChatNewJava17.service.impl;
 
+import Dmitro.ru.SimpleChatNewJava17.model.Message;
 import Dmitro.ru.SimpleChatNewJava17.model.User;
 import Dmitro.ru.SimpleChatNewJava17.repository.InMemoryUserDAO;
 import Dmitro.ru.SimpleChatNewJava17.service.UserService;
@@ -22,6 +23,26 @@ public class MemoryUserServiceImpl implements UserService {
 
     @Override
     public Page<User> FindAllUsers(int page, int size){
+        return null;
+    }
+
+    @Override
+    public Message FindMessageById(long id) {
+        return null;
+    }
+
+    @Override
+    public List<Message> getAllOfMessage() {
+        return List.of();
+    }
+
+    @Override
+    public Message AddMessage(Message message) {
+        return null;
+    }
+
+    @Override
+    public Message UpdateMessage(long id, String newMessageContent) {
         return null;
     }
 

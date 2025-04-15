@@ -20,7 +20,7 @@
             </div>
             <div th:id="GeneralInfo">
                 <h1 th:text="${userClick != null} ? ${userClick.getName()} + ' ' + ${userClick.getLastName()} : 'Такого пользователя не существует'"></h1>
-                <div id="MessageForm">
+                <div id="MessageForm" th:text="${tailOfMessage != null} ? ${tailOfMessage} : ''">
 
                 </div>
                 <form th:action="@{/api/v1/users/message}" method="post">

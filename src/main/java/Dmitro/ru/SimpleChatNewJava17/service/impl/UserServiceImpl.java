@@ -35,14 +35,22 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(pageable);
     }
 
+    @Override
     public Message FindMessageById(long id) {
         return messageRepository.findById(id).orElse(null);
     }
 
+    @Override
+    public List<Message> getAllOfMessage() {
+        return messageRepository.findAll();
+    }
+
+    @Override
     public Message AddMessage(Message message) {
         return messageRepository.save(message);
     }
 
+    @Override
     public Message UpdateMessage(long id, String newMessageContent) {
         Message existingMessage = messageRepository.findById(id).orElse(null);
         if (existingMessage != null) {

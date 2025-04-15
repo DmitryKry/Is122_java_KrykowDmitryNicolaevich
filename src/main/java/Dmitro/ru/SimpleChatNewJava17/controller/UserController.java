@@ -1,7 +1,9 @@
 package Dmitro.ru.SimpleChatNewJava17.controller;
 
+import Dmitro.ru.SimpleChatNewJava17.model.Message;
 import Dmitro.ru.SimpleChatNewJava17.model.User;
 import Dmitro.ru.SimpleChatNewJava17.service.UserService;
+import Dmitro.ru.SimpleChatNewJava17.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,14 +196,41 @@ public class UserController {
         session.setAttribute("companion", userClick);
         model.addAttribute("user", userService.getInMemoryUser());
         model.addAttribute("userClick", userClick);
+        model.addAttribute("tailOfMessage", null);
         return "PageOfUser";
     }
 
     @PostMapping("/users/message")
     public String InputMessages(@RequestParam("message") String message, Model model, HttpSession session) {
-        model.addAttribute("user", userService.getInMemoryUser());
-        model.addAttribute("userClick", session.getAttribute("companion"));
-        return "PageOfUser";
+        List<Message> allMessage = userService.getAllOfMessage();
+        List<Message> messagesOfUser = allMessage.stream().
+                filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
+                        m.getSecondID() == ((User) session.getAttribute("companion")).getId())
+                .toList();
+        if (userService.getInMemoryUser() == null){
+            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("userClick", session.getAttribute("companion"));
+            model.addAttribute("tailOfMessage", null);
+            return "PageOfUser";
+        }
+        if (messagesOfUser.isEmpty()) {
+            Message newMessage = new Message();
+            User companion = (User) session.getAttribute("companion");
+            newMessage.setFirstID(userService.getInMemoryUser().getId());
+            newMessage.setSecondID(companion.getId());
+            newMessage.setMessage(message);
+            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("userClick", session.getAttribute("companion"));
+            model.addAttribute("tailOfMessage", newMessage.getMessage());
+            userService.AddMessage(newMessage);
+            return "PageOfUser";
+        }
+        else {
+            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("userClick", session.getAttribute("companion"));
+            model.addAttribute("tailOfMessage", null);
+            return "PageOfUser";
+        }
     }
 
     @GetMapping("/{email}")

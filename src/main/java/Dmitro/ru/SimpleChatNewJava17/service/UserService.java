@@ -1,5 +1,6 @@
 package Dmitro.ru.SimpleChatNewJava17.service;
 
+import Dmitro.ru.SimpleChatNewJava17.model.Message;
 import Dmitro.ru.SimpleChatNewJava17.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,10 @@ public interface UserService {
     User FindUserById(long id);
     User FindUserByEmail(String email);
     Page<User> FindAllUsers(int page, int size);
+    Message FindMessageById(long id);
+    List<Message> getAllOfMessage();
+    Message AddMessage(Message message);
+    Message UpdateMessage(long id, String newMessageContent);
     User SaveUser(User user);
     User FindUserByEmailAndPassword(String email, String password);
     User UpdateUser(User user);
