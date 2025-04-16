@@ -177,8 +177,8 @@ public class UserController {
                 session.setAttribute("users", findOfUsers);
                 model.addAttribute("user", userService.getInMemoryUser());
                 model.addAttribute("allUsers", findOfUsers);
-                model.addAttribute("currentPage", page);  // Текущая страница
-                model.addAttribute("totalPages", usersPage.getTotalPages());  // Общее количество страниц
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", usersPage.getTotalPages());
                 model.addAttribute("totalItems", usersPage.getTotalElements());
             }
             return "users";
@@ -194,26 +194,63 @@ public class UserController {
     public String ShapeFormForId(@PathVariable int id, Model model, HttpSession session) {
         User userClick = userService.FindUserById(id);
         session.setAttribute("companion", userClick);
+        String message = "";
+
+        if (userService.getInMemoryUser() == null || ((User) session.getAttribute("companion")).getId()
+                == userService.getInMemoryUser().getId()) {
+            Page<User> usersPage = userService.FindAllUsers(0, 10);
+            model.addAttribute("users", session.getAttribute("users"));
+            session.setAttribute("users", session.getAttribute("users"));
+            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("allUsers", session.getAttribute("users"));
+            model.addAttribute("currentPage", 0);
+            model.addAttribute("totalPages", usersPage.getTotalPages());
+            model.addAttribute("totalItems", usersPage.getTotalElements());
+            return "users";
+        }
+
+        List<Message> allMessage = userService.getAllOfMessage();
+        Message messagesOfUser = allMessage.stream().
+                filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
+                        m.getSecondID() == ((User) session.getAttribute("companion")).getId())
+                .findFirst().orElse(null);
+        if (messagesOfUser == null) {
+            messagesOfUser = allMessage.stream().
+                    filter(m -> m.getFirstID() == ((User) session.getAttribute("companion")).getId() &&
+                            m.getSecondID() == userService.getInMemoryUser().getId())
+                    .findFirst().orElse(null);
+        }
+        if (messagesOfUser == null) {
+            userService.UpdateMessage(messagesOfUser.getId(), message);
+        }
+        model.addAttribute("tailOfMessage", messagesOfUser.getMessage());
         model.addAttribute("user", userService.getInMemoryUser());
-        model.addAttribute("userClick", userClick);
-        model.addAttribute("tailOfMessage", null);
+        model.addAttribute("userClick", session.getAttribute("companion"));
+
         return "PageOfUser";
     }
 
     @PostMapping("/users/message")
     public String InputMessages(@RequestParam("message") String message, Model model, HttpSession session) {
-        List<Message> allMessage = userService.getAllOfMessage();
-        List<Message> messagesOfUser = allMessage.stream().
-                filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
-                        m.getSecondID() == ((User) session.getAttribute("companion")).getId())
-                .toList();
-        if (userService.getInMemoryUser() == null){
+        if (userService.getInMemoryUser() == null || ((User) session.getAttribute("companion")) == null){
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", null);
             return "PageOfUser";
         }
-        if (messagesOfUser.isEmpty()) {
+
+        List<Message> allMessage = userService.getAllOfMessage();
+        Message messagesOfUser = allMessage.stream().
+                filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
+                        m.getSecondID() == ((User) session.getAttribute("companion")).getId())
+                .findFirst().orElse(null);
+        if (messagesOfUser == null) {
+            messagesOfUser = allMessage.stream().
+                    filter(m -> m.getFirstID() == ((User) session.getAttribute("companion")).getId() &&
+                            m.getSecondID() == userService.getInMemoryUser().getId())
+                    .findFirst().orElse(null);
+        }
+        if (messagesOfUser  == null) {
             Message newMessage = new Message();
             User companion = (User) session.getAttribute("companion");
             newMessage.setFirstID(userService.getInMemoryUser().getId());
@@ -226,9 +263,12 @@ public class UserController {
             return "PageOfUser";
         }
         else {
+            userService.UpdateMessage(messagesOfUser.getId(), "\n" +
+                    userService.getInMemoryUser().getName() + " - " + message);
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
-            model.addAttribute("tailOfMessage", null);
+            model.addAttribute("tailOfMessage", "\n" +
+                    userService.getInMemoryUser().getName() + " - " + messagesOfUser.getMessage());
             return "PageOfUser";
         }
     }
