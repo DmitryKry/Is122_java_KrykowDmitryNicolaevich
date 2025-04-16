@@ -211,6 +211,18 @@ a{
     border-radius: 2% / 2%;
     margin-bottom: 0.5%;
     display: flex;
+    user-select: text;
+}
+
+#GeneralInfo #MessageForm li{
+    padding-left: 0px;
+}
+
+#GeneralInfo #MessageForm ul > li:last-child{
+    border-bottom: 0px solid black;
+    list-style-type: none;
+    padding-left: 0;
+
 }
 
 #GeneralInfo #message{
@@ -221,14 +233,30 @@ a{
     position: relative;
     left: 3%;
     border: black solid 3px;
+
 }
 
 #GeneralInfo #sendMessage{
     position: absolute;
+    background-color: white;
+    color: black;
     right: 3%;
     bottom: 1%;
     padding: 0.5%;
     border-radius: 20% / 20%;
+    transition: 0.5s;
+
+
+}
+
+#GeneralInfo #sendMessage:hover{
+    background-color: black;
+    color: white;
+}
+
+#GeneralInfo #sendMessage:active{
+    background-color: white !important;
+    color: black !important;
 }
 
 .form-group{

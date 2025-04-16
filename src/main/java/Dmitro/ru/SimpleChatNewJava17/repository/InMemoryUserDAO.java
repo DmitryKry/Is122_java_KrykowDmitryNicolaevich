@@ -18,7 +18,7 @@ public class InMemoryUserDAO {
     public User GetInMemoryUserDAO() {
         if (InMemoryUserDAO.user != null) {
             return InMemoryUserDAO.user;
-        }else {
+        } else {
             return null;
         }
     }

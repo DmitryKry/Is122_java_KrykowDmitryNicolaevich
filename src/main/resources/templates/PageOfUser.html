@@ -20,8 +20,14 @@
             </div>
             <div th:id="GeneralInfo">
                 <h1 th:text="${userClick != null} ? ${userClick.getName()} + ' ' + ${userClick.getLastName()} : 'Такого пользователя не существует'"></h1>
-                <div id="MessageForm" th:text="${tailOfMessage != null} ? ${tailOfMessage} : ''">
-
+                <div id="MessageForm">
+                    <ul th:if="${#lists.size(tailOfMessage) > 0}">
+                        <li th:each="t : ${tailOfMessage}">
+                            <div th:id="tailOfMessage">
+                                <span th:text="${t}"></span>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
                 <form th:action="@{/api/v1/users/message}" method="post">
                     <input th:id="message" type="text" name="message" required>

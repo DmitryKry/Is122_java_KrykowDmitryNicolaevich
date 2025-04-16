@@ -190,6 +190,7 @@ public class UserController {
         }
     }
 
+    // А это маппер для вывода сообщений
     @GetMapping("/users/{id}")
     public String ShapeFormForId(@PathVariable int id, Model model, HttpSession session) {
         User userClick = userService.FindUserById(id);
@@ -220,16 +221,30 @@ public class UserController {
                             m.getSecondID() == userService.getInMemoryUser().getId())
                     .findFirst().orElse(null);
         }
-        if (messagesOfUser == null) {
-            userService.UpdateMessage(messagesOfUser.getId(), message);
+        if (messagesOfUser == null){
+            model.addAttribute("tailOfMessage", new ArrayList<>());
+            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("userClick", session.getAttribute("companion"));
+            return "PageOfUser";
         }
-        model.addAttribute("tailOfMessage", messagesOfUser.getMessage());
+        List<String> tailOfMessage = new ArrayList<>();
+        String temp = "";
+        for (char m : messagesOfUser.getMessage().toCharArray()) {
+            if (m == '\n') {
+                tailOfMessage.add(temp);
+                temp = "";
+            }
+            else {
+                temp += m;
+            }
+        }
+        model.addAttribute("tailOfMessage", tailOfMessage);
         model.addAttribute("user", userService.getInMemoryUser());
         model.addAttribute("userClick", session.getAttribute("companion"));
-
         return "PageOfUser";
     }
 
+    // Я уже начинаю теряться, это маппер для принятия и ввода сообщений
     @PostMapping("/users/message")
     public String InputMessages(@RequestParam("message") String message, Model model, HttpSession session) {
         if (userService.getInMemoryUser() == null || ((User) session.getAttribute("companion")) == null){
@@ -258,17 +273,28 @@ public class UserController {
             newMessage.setMessage(message);
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
-            model.addAttribute("tailOfMessage", newMessage.getMessage());
+            model.addAttribute("tailOfMessage", newMessage);
             userService.AddMessage(newMessage);
             return "PageOfUser";
         }
         else {
+            List<String> tailOfMessage = new ArrayList<>();
+            String temp = "";
+            for (char m : messagesOfUser.getMessage().toCharArray()) {
+                if (m == '\n') {
+                    tailOfMessage.add(temp);
+                    temp = "";
+                }
+                else {
+                    temp += m;
+                }
+            }
             userService.UpdateMessage(messagesOfUser.getId(), "\n" +
                     userService.getInMemoryUser().getName() + " - " + message);
+            tailOfMessage.add(userService.getInMemoryUser().getName() + " - " + message);
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
-            model.addAttribute("tailOfMessage", "\n" +
-                    userService.getInMemoryUser().getName() + " - " + messagesOfUser.getMessage());
+            model.addAttribute("tailOfMessage", tailOfMessage);
             return "PageOfUser";
         }
     }
