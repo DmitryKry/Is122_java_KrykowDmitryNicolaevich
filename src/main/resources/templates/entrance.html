@@ -17,6 +17,9 @@
                 <div th:id="User">
                     <a th:href="@{/api/v1/users}">Пользователь</a>
                 </div>
+                <div th:if="${user != null}" th:id="historyOfMessages">
+                    <a th:href="@{/api/v1/historyOfMessages}">История сообщений</a>
+                </div>
             </div>
             <div th:id="GeneralInfo">
                 <form th:action="@{/api/v1/entranceByEmail}" method="post">

@@ -11,6 +11,8 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String message;
     private long firstID;
     private long secondID;

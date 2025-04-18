@@ -271,9 +271,11 @@ public class UserController {
             newMessage.setFirstID(userService.getInMemoryUser().getId());
             newMessage.setSecondID(companion.getId());
             newMessage.setMessage(message);
+            List<Message> newMessages = new ArrayList<>();
+            newMessages.add(newMessage);
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
-            model.addAttribute("tailOfMessage", newMessage);
+            model.addAttribute("tailOfMessage", newMessages);
             userService.AddMessage(newMessage);
             return "PageOfUser";
         }
@@ -291,12 +293,45 @@ public class UserController {
             }
             userService.UpdateMessage(messagesOfUser.getId(), "\n" +
                     userService.getInMemoryUser().getName() + " - " + message);
-            tailOfMessage.add(userService.getInMemoryUser().getName() + " - " + message);
+            messagesOfUser = allMessage.stream().
+                    filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
+                            m.getSecondID() == ((User) session.getAttribute("companion")).getId())
+                    .findFirst().orElse(null);
+            if (messagesOfUser == null) {
+                messagesOfUser = allMessage.stream().
+                        filter(m -> m.getFirstID() == ((User) session.getAttribute("companion")).getId() &&
+                                m.getSecondID() == userService.getInMemoryUser().getId())
+                        .findFirst().orElse(null);
+            }
+            tailOfMessage.add(messagesOfUser.getMessage());
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", tailOfMessage);
             return "PageOfUser";
         }
+    }
+
+    @GetMapping("/historyOfMessages")
+    public String historyOfMessages(Model model, HttpSession session) {
+        if (userService.getInMemoryUser() == null) {
+            return "users";
+        }
+        List<Message> allMessage = userService.getAllOfMessage();
+        List<Message> messagesOfUser = allMessage.stream().
+                filter(message -> message.getFirstID() == userService.getInMemoryUser().getId()
+                || message.getSecondID() == userService.getInMemoryUser().getId()).toList();
+        List<User> allUsers = userService.FindAllUsers();
+        List<User> findOfUsersForDialog = allUsers.stream().
+                filter(user -> messagesOfUser.stream()
+                        .anyMatch(message ->
+                                message.getFirstID() == user.getId() || message.getSecondID() == user.getId())).
+                toList();
+        List<User> findOfUsersForDialogMore = findOfUsersForDialog.stream().
+                filter(user -> user.getId() != userService.getInMemoryUser().getId()).
+                toList();
+        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("users", findOfUsersForDialogMore);
+        return "historyOfMessages";
     }
 
     @GetMapping("/{email}")
