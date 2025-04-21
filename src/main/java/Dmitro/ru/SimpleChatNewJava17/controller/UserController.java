@@ -319,7 +319,9 @@ public class UserController {
     }
 
     @GetMapping("/historyOfMessages")
-    public String historyOfMessages(Model model, HttpSession session) {
+    public String historyOfMessages(@RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "1") int size,
+                                    Model model, HttpSession session) {
         if (userService.getInMemoryUser() == null) {
             return "users";
         }
@@ -333,11 +335,21 @@ public class UserController {
                         .anyMatch(message ->
                                 message.getFirstID() == user.getId() || message.getSecondID() == user.getId())).
                 toList();
+        // список который захватывает только сообщения с конкрентным пользователем
         List<User> findOfUsersForDialogMore = findOfUsersForDialog.stream().
                 filter(user -> user.getId() != userService.getInMemoryUser().getId()).
                 toList();
+        // Добавляю дополнительный список для пагинации
+        List<User> users = new ArrayList<>();
+        for (int i = 0; i < 10; i++){
+            if ((i + page) < findOfUsersForDialogMore.size())
+                users.add(findOfUsersForDialogMore.get(i + page));
+        }
         model.addAttribute("user", userService.getInMemoryUser());
-        model.addAttribute("users", findOfUsersForDialogMore);
+        model.addAttribute("users", users);
+        model.addAttribute("userCount", findOfUsersForDialogMore.size());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", findOfUsersForDialogMore.size());
         return "historyOfMessages";
     }
 

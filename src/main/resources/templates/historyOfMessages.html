@@ -23,7 +23,7 @@
             </div>
             <div th:id="GeneralInfo">
                 <h2 th:id="COUNT"
-                    th:text="'Количество сообщений' + ' - ' + (${users != null} ? ${users.size()} : 0)"></h2>
+                    th:text="'Количество сообщений' + ' - ' + (${users != null} ? ${userCount} : 0)"></h2>
                 <ul th:if="${users != null}">
                     <li th:each="u : ${users}">
                         <div th:id="Transfer">
@@ -36,13 +36,12 @@
                         </div>
                     </li>
                 </ul>
-                <!--
                 <div id="pagination">
-                    <a th:href="@{/api/v1/users(page=${currentPage - 1})}" th:if="${currentPage > 0}"></a>
-                    <a th:href="@{/api/v1/users(page=${currentPage})}" th:if="${currentPage < 1}"></a>
-                    <a th:href="@{/api/v1/users(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}"></a>
-                    <a th:href="@{/api/v1/users(page=${currentPage})}" th:if="${currentPage == totalPages - 1}"></a>
-                </div> !-->
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage - 1})}" th:if="${currentPage > 0}"></a>
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage})}" th:if="${currentPage < 1}"></a>
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}"></a>
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage})}" th:if="${currentPage == totalPages - 1}"></a>
+                </div>
             </div>
         </div>
     </body>
