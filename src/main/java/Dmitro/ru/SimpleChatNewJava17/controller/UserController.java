@@ -229,11 +229,12 @@ public class UserController {
         }
         List<Message> tailOfMessage = new ArrayList<>();
         Message tempMessages = new Message();
-        tempMessages.setSecondID(0);
         boolean check = false;
         String temp = "";
         for (char m : messagesOfUser.getMessage().toCharArray()) {
             if (!check && m == ' ') {
+                tempMessages = new Message();
+                tempMessages.setSecondID(0);
                 tempMessages.setFirstID(Integer.parseInt(temp));
                 temp = "";
                 check = true;
@@ -283,21 +284,42 @@ public class UserController {
             User companion = (User) session.getAttribute("companion");
             newMessage.setFirstID(userService.getInMemoryUser().getId());
             newMessage.setSecondID(companion.getId());
-            newMessage.setMessage(userService.getInMemoryUser().getId() + " " +
-                    userService.getInMemoryUser().getName() + " - " + message);
-
+            newMessage.setMessage(userService.getInMemoryUser().getId() + " " + message);
+            userService.AddMessage(newMessage);
+            List<Message> tailOfMessage = new ArrayList<>();
+            Message tempMessages = new Message();
+            boolean check = false;
+            String temp = "";
+            for (char m : newMessage.getMessage().toCharArray()) {
+                if (!check && m == ' ') {
+                    tempMessages = new Message();
+                    tempMessages.setSecondID(0);
+                    tempMessages.setFirstID(Integer.parseInt(temp));
+                    temp = "";
+                    check = true;
+                    continue;
+                }
+                if (m == '\n') {
+                    tempMessages.setMessage(temp);
+                    tailOfMessage.add(tempMessages);
+                    temp = "";
+                    check = false;
+                }
+                else {
+                    temp += m;
+                }
+            }
+            tempMessages.setMessage(temp);
+            tailOfMessage.add(tempMessages);
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
-            model.addAttribute("tailOfMessage", userService.getInMemoryUser().getId()
-                    + " " + message);
-            userService.AddMessage(newMessage);
+            model.addAttribute("tailOfMessage", tailOfMessage);
+
             return "PageOfUser";
         }
         else {
             userService.UpdateMessage(messagesOfUser.getId(),
                     userService.getInMemoryUser().getId() + " " + message);
-            /*tailOfMessage.add("\n" +
-                    userService.getInMemoryUser().getId() + message);*/
             // обновляю список сообщений в allMessage
             allMessage = userService.getAllOfMessage();
             messagesOfUser = allMessage.stream().
@@ -312,11 +334,12 @@ public class UserController {
             }
             List<Message> tailOfMessage = new ArrayList<>();
             Message tempMessages = new Message();
-            tempMessages.setSecondID(0);
             boolean check = false;
             String temp = "";
             for (char m : messagesOfUser.getMessage().toCharArray()) {
                 if (!check && m == ' ') {
+                    tempMessages = new Message();
+                    tempMessages.setSecondID(0);
                     tempMessages.setFirstID(Integer.parseInt(temp));
                     temp = "";
                     check = true;

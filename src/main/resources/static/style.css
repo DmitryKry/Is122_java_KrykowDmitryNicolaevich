@@ -68,7 +68,7 @@ a{
 }
 
 #Menu #UserText{
-    margin-left: 46%;
+    margin-left: 47%;
 }
 
 #Menu #historyOfMessages{
@@ -220,19 +220,22 @@ a{
     overflow-y: auto;
 }
 
-#GeneralInfo #MessageForm li{
-    padding-left: 0px;
+#GeneralInfo #MessageForm ul {
+    list-style-type: none; /* Убираем маркеры списка */
+    padding: 0; /* Убираем отступы у списка */
+    margin: 0; /* Убираем внешние отступы у списка */
 }
 
-
-#GeneralInfo #MessageForm > ul{
-    margin-left: 1%;
-
+#GeneralInfo #MessageForm li{
+    display: flex; /* Используем flex для лучшего контроля */
+    justify-content: flex-start; /* По умолчанию сообщения выравниваются влево */
+    padding-left: 0px;
 }
 
 #GeneralInfo #MessageForm #tailOfMessage{
     border: white solid 1px;
     display: block;
+    margin-left: 1%;
     text-align: center;
     margin-top: 2%;
     padding: 3%;
@@ -245,10 +248,14 @@ a{
     color: white;
 }
 
-#GeneralInfo #MessageForm #tailOfMessageOwner{
+#GeneralInfo #MessageForm li div[id="tailOfMessageOwner"]{
     border: white solid 1px;
     display: block;
+    position: relative;
     text-align: center;
+    right: -102%;
+    margin-left: auto; /* Это заставит блок прижиматься к правому краю */
+    margin-right: 1%; /* Отступ от правого края */
     margin-top: 2%;
     padding: 3%;
     width: 400px; /* фиксированная ширина */
@@ -257,7 +264,7 @@ a{
     overflow-wrap: break-word; /* для поддержки */
     border-radius: 5% / 50%;
     background-color: #07f;
-    color: black;
+    color: white;
 }
 
 #GeneralInfo #MessageForm #tailOfMessage:hover{
