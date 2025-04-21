@@ -238,6 +238,7 @@ public class UserController {
                 temp += m;
             }
         }
+        tailOfMessage.add(temp);
         model.addAttribute("tailOfMessage", tailOfMessage);
         model.addAttribute("user", userService.getInMemoryUser());
         model.addAttribute("userClick", session.getAttribute("companion"));
@@ -270,29 +271,22 @@ public class UserController {
             User companion = (User) session.getAttribute("companion");
             newMessage.setFirstID(userService.getInMemoryUser().getId());
             newMessage.setSecondID(companion.getId());
-            newMessage.setMessage(message);
-            List<Message> newMessages = new ArrayList<>();
-            newMessages.add(newMessage);
+            newMessage.setMessage(userService.getInMemoryUser().getId() + " - " + message);
+
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
-            model.addAttribute("tailOfMessage", newMessages);
+            model.addAttribute("tailOfMessage", userService.getInMemoryUser().getId()
+                    + " - " + message);
             userService.AddMessage(newMessage);
             return "PageOfUser";
         }
         else {
-            List<String> tailOfMessage = new ArrayList<>();
-            String temp = "";
-            for (char m : messagesOfUser.getMessage().toCharArray()) {
-                if (m == '\n') {
-                    tailOfMessage.add(temp);
-                    temp = "";
-                }
-                else {
-                    temp += m;
-                }
-            }
             userService.UpdateMessage(messagesOfUser.getId(), "\n" +
-                    userService.getInMemoryUser().getName() + " - " + message);
+                    userService.getInMemoryUser().getId() + " - " + message);
+            /*tailOfMessage.add("\n" +
+                    userService.getInMemoryUser().getId() + message);*/
+            // обновляю список сообщений в allMessage
+            allMessage = userService.getAllOfMessage();
             messagesOfUser = allMessage.stream().
                     filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
                             m.getSecondID() == ((User) session.getAttribute("companion")).getId())
@@ -303,7 +297,20 @@ public class UserController {
                                 m.getSecondID() == userService.getInMemoryUser().getId())
                         .findFirst().orElse(null);
             }
-            tailOfMessage.add(messagesOfUser.getMessage());
+            String temp = "";
+            boolean cheak = false;
+            Message tempMessage = new Message();
+            List<String> tailOfMessage = new ArrayList<>();
+            for (char m : messagesOfUser.getMessage().toCharArray()) {
+                if (m == '\n') {
+                    tailOfMessage.add(temp);
+                    temp = "";
+                }
+                else {
+                    temp += m;
+                }
+            }
+            tailOfMessage.add(temp);
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", tailOfMessage);

@@ -67,7 +67,7 @@ a{
 }
 
 #Menu #UserText{
-    margin-left: 45%;
+    margin-left: 46%;
 }
 
 #Menu #historyOfMessages{
@@ -216,17 +216,48 @@ a{
     margin-bottom: 0.5%;
     display: flex;
     user-select: text;
+    overflow-y: auto;
 }
 
 #GeneralInfo #MessageForm li{
     padding-left: 0px;
 }
 
-#GeneralInfo #MessageForm ul > li:last-child{
-    border-bottom: 0px solid black;
-    list-style-type: none;
-    padding-left: 0;
 
+#GeneralInfo #MessageForm > ul{
+    margin-left: 1%;
+
+}
+
+#GeneralInfo #MessageForm #tailOfMessage{
+    border: white solid 1px;
+    display: block;
+    text-align: center;
+    margin-top: 2%;
+    padding: 3%;
+    width: 400px; /* фиксированная ширина */
+    max-width: 100%; /* на всякий случай, чтобы не вылазило */
+    word-wrap: break-word; /* перенос слов */
+    overflow-wrap: break-word; /* для поддержки */
+    border-radius: 5% / 50%;
+    background-color: #07f;
+    color: white;
+}
+
+#GeneralInfo #MessageForm #tailOfMessage:hover{
+    background-color: #248aff;
+}
+
+#GeneralInfo #MessageForm ul li:last-child div#tailOfMessage {
+    margin-bottom: 20px !important;
+}
+
+#GeneralInfo #MessageForm ul li:last-child{
+    border-bottom: 0px;
+}
+
+#GeneralInfo #MessageForm .scroll-spacer {
+    height: 30px; /* или сколько нужно отступа */
 }
 
 #GeneralInfo #message{
@@ -242,19 +273,17 @@ a{
 
 #GeneralInfo #sendMessage{
     position: absolute;
-    background-color: white;
-    color: black;
+    background-color: #07f;
+    color: white;
     right: 3%;
-    bottom: 1%;
-    padding: 0.5%;
+    bottom: 6px;
+    padding: 1%;
     border-radius: 20% / 20%;
-    transition: 0.5s;
-
-
+    border: white;
 }
 
 #GeneralInfo #sendMessage:hover{
-    background-color: black;
+    background-color: #248aff;
     color: white;
 }
 

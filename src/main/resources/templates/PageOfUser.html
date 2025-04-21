@@ -26,10 +26,11 @@
                 <div id="MessageForm">
                     <ul th:if="${#lists.size(tailOfMessage) > 0}">
                         <li th:each="t : ${tailOfMessage}">
-                            <div th:id="tailOfMessage">
+                            <div th:id="tailOfMessage" th:if="${t.length() > 1}">
                                 <span th:text="${t}"></span>
                             </div>
                         </li>
+                        <li class="scroll-spacer"></li> <!-- пустой блок для отступа -->
                     </ul>
                 </div>
                 <form th:action="@{/api/v1/users/message}" method="post">
