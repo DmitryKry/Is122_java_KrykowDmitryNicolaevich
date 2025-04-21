@@ -227,18 +227,30 @@ public class UserController {
             model.addAttribute("userClick", session.getAttribute("companion"));
             return "PageOfUser";
         }
-        List<String> tailOfMessage = new ArrayList<>();
+        List<Message> tailOfMessage = new ArrayList<>();
+        Message tempMessages = new Message();
+        tempMessages.setSecondID(0);
+        boolean check = false;
         String temp = "";
         for (char m : messagesOfUser.getMessage().toCharArray()) {
-            if (m == '\n') {
-                tailOfMessage.add(temp);
+            if (!check && m == ' ') {
+                tempMessages.setFirstID(Integer.parseInt(temp));
                 temp = "";
+                check = true;
+                continue;
+            }
+            if (m == '\n') {
+                tempMessages.setMessage(temp);
+                tailOfMessage.add(tempMessages);
+                temp = "";
+                check = false;
             }
             else {
                 temp += m;
             }
         }
-        tailOfMessage.add(temp);
+        tempMessages.setMessage(temp);
+        tailOfMessage.add(tempMessages);
         model.addAttribute("tailOfMessage", tailOfMessage);
         model.addAttribute("user", userService.getInMemoryUser());
         model.addAttribute("userClick", session.getAttribute("companion"));
@@ -298,20 +310,30 @@ public class UserController {
                                 m.getSecondID() == userService.getInMemoryUser().getId())
                         .findFirst().orElse(null);
             }
+            List<Message> tailOfMessage = new ArrayList<>();
+            Message tempMessages = new Message();
+            tempMessages.setSecondID(0);
+            boolean check = false;
             String temp = "";
-            boolean cheak = false;
-            Message tempMessage = new Message();
-            List<String> tailOfMessage = new ArrayList<>();
             for (char m : messagesOfUser.getMessage().toCharArray()) {
-                if (m == '\n') {
-                    tailOfMessage.add(temp);
+                if (!check && m == ' ') {
+                    tempMessages.setFirstID(Integer.parseInt(temp));
                     temp = "";
+                    check = true;
+                    continue;
+                }
+                if (m == '\n') {
+                    tempMessages.setMessage(temp);
+                    tailOfMessage.add(tempMessages);
+                    temp = "";
+                    check = false;
                 }
                 else {
                     temp += m;
                 }
             }
-            tailOfMessage.add(temp);
+            tempMessages.setMessage(temp);
+            tailOfMessage.add(tempMessages);
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", tailOfMessage);
