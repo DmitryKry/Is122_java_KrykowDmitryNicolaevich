@@ -2,6 +2,7 @@ body{
     color: black;
     background-color: #fcfcfc;
     user-select: none;
+    overflow-y: hidden;
 }
 
 a{
@@ -76,11 +77,11 @@ a{
 
 #GeneralInfo{
     width: 45%;
-    height: 90%;
+    height: 93%;
     margin-left: 27%;
     border: 1px solid black;
     position: absolute;
-    top: 9%;
+    top: 6%;
     text-align: center;
     border-radius: 2% / 2%;
 }
@@ -161,7 +162,7 @@ a{
 
 #GeneralInfo #pagination{
     position: absolute;
-    left: 48%;
+    left: 49%;
     bottom: 0.2%;
     display: flex; /* Используем flexbox для выравнивания элементов по горизонтали */
     justify-content: center;
@@ -262,23 +263,25 @@ a{
 
 #GeneralInfo #message{
     display: block;
-    width: 83%;
-    border-radius: 25% / 25%;
+    width: 80%;
     height: 25px;
     position: relative;
+    padding: 0.5%;
+    padding-left: 2%;
     left: 3%;
     border: black solid 3px;
+    border-radius: 5% / 100%;
 
 }
 
 #GeneralInfo #sendMessage{
-    position: absolute;
+    position: relative;
     background-color: #07f;
     color: white;
-    right: 3%;
-    bottom: 6px;
-    padding: 1%;
-    border-radius: 20% / 20%;
+    left: 42%;
+    top: -40px;
+    padding: 1.5%;
+    border-radius: 40% / 100%;
     border: white;
 }
 

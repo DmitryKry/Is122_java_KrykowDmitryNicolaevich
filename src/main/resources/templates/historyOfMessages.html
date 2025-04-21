@@ -12,13 +12,13 @@
                     <a th:text="${user != null} ? ${user.getName()} + ' ' + ${user.getLastName()} : 'Войдите в аккаунт'"></a>
                 </div>
                 <div th:id="Entrance">
-                    <a th:href="@{/api/v1/entrance}">Вход</a>
+                    <a th:href="@{/api/v1/entrance}">Аккаунт</a>
                 </div>
                 <div th:id="User">
-                    <a th:href="@{/api/v1/users}">Пользователь</a>
+                    <a th:href="@{/api/v1/users}">Пользователи</a>
                 </div>
                 <div th:if="${user != null}" th:id="historyOfMessages">
-                    <a th:href="@{/api/v1/historyOfMessages}">История сообщений</a>
+                    <a th:href="@{/api/v1/historyOfMessages}">Истории сообщений</a>
                 </div>
             </div>
             <div th:id="GeneralInfo">

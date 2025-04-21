@@ -34,7 +34,7 @@ public class UserController {
         List<User> findAllUsers = new ArrayList<>();
         Page<User> usersPage = userService.FindAllUsers(page, size);
         if (session.getAttribute("users") == null) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 12; i++) {
                 if ((i + page) < userService.FindAllUsers().size())
                     users.add(userService.FindAllUsers().get(i + page));
             }
@@ -126,7 +126,7 @@ public class UserController {
 
     @PostMapping("/findByEmail")
     public String FindUserByEmail(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "10") int size,
+                                  @RequestParam(defaultValue = "12") int size,
                                   @RequestParam("email") String email,
                                   Model model,
                                   HttpSession session) {
@@ -271,18 +271,19 @@ public class UserController {
             User companion = (User) session.getAttribute("companion");
             newMessage.setFirstID(userService.getInMemoryUser().getId());
             newMessage.setSecondID(companion.getId());
-            newMessage.setMessage(userService.getInMemoryUser().getId() + " - " + message);
+            newMessage.setMessage(userService.getInMemoryUser().getId() + " " +
+                    userService.getInMemoryUser().getName() + " - " + message);
 
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", userService.getInMemoryUser().getId()
-                    + " - " + message);
+                    + " " + message);
             userService.AddMessage(newMessage);
             return "PageOfUser";
         }
         else {
-            userService.UpdateMessage(messagesOfUser.getId(), "\n" +
-                    userService.getInMemoryUser().getId() + " - " + message);
+            userService.UpdateMessage(messagesOfUser.getId(),
+                    userService.getInMemoryUser().getId() + " " + message);
             /*tailOfMessage.add("\n" +
                     userService.getInMemoryUser().getId() + message);*/
             // обновляю список сообщений в allMessage
@@ -341,7 +342,7 @@ public class UserController {
                 toList();
         // Добавляю дополнительный список для пагинации
         List<User> users = new ArrayList<>();
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < 12; i++){
             if ((i + page) < findOfUsersForDialogMore.size())
                 users.add(findOfUsersForDialogMore.get(i + page));
         }
