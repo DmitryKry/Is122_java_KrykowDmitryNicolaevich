@@ -272,8 +272,6 @@ public class UserController {
                     temp += m;
                 }
             }
-            tempMessages.setMessage(temp);
-            tailOfMessage.add(tempMessages);
             for (int i = tailOfMessage.size() - 1; i >= 0; i--) {
                 if (tailOfMessage.get(i).getFirstID() == userService.getInMemoryUser().getId()){
                     tailOfMessage.remove(i);
