@@ -27,10 +27,10 @@
                 <div id="MessageForm">
                     <ul th:if="${#lists.size(tailOfMessage) > 0}">
                         <li th:each="t : ${tailOfMessage}">
-                            <div th:id="tailOfMessage" th:if="${t.getMessage().length() > 1 and t.getFirstID() != user.getId()}">
+                            <div th:id="tailOfMessage" th:if="${t.getMessage().length() > 0 and t.getFirstID() != user.getId()}">
                                 <span th:text="${t.getMessage()}"></span>
                             </div>
-                            <div th:id="tailOfMessageOwner" th:if="${t.getMessage().length() > 1 and t.getFirstID() == user.getId()}">
+                            <div th:id="tailOfMessageOwner" th:if="${t.getMessage().length() > 0 and t.getFirstID() == user.getId()}">
                                 <span th:text="${t.getMessage()}"></span>
                             </div>
                         </li>
