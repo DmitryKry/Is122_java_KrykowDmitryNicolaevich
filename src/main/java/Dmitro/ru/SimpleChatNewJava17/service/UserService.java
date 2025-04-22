@@ -17,6 +17,7 @@ public interface UserService {
     List<Message> getAllOfMessage();
     Message AddMessage(Message message);
     Message UpdateMessage(long id, String newMessageContent);
+    void DeleteMessage(long id);
     User SaveUser(User user);
     User FindUserByEmailAndPassword(String email, String password);
     User UpdateUser(User user);

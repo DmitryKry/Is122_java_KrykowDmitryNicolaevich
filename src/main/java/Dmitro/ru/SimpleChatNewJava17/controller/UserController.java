@@ -192,7 +192,8 @@ public class UserController {
 
     // А это маппер для вывода сообщений
     @GetMapping("/users/{id}")
-    public String ShapeFormForId(@PathVariable int id, Model model, HttpSession session) {
+    public String ShapeFormForId(@PathVariable int id, @RequestParam(defaultValue = "false") boolean allow,
+                                 Model model, HttpSession session) {
         User userClick = userService.FindUserById(id);
         session.setAttribute("companion", userClick);
         String message = "";
@@ -252,9 +253,55 @@ public class UserController {
         }
         tempMessages.setMessage(temp);
         tailOfMessage.add(tempMessages);
+        // переписываю список, убирая сообщения пользователя, удаляя целый блок сообщения и создавая новый
+        if (allow) {
+            tailOfMessage.clear();
+            temp = "";
+            for (char m : messagesOfUser.getMessage().toCharArray()) {
+                if (!check && m == ' ') {
+                    tempMessages = new Message();
+                    tempMessages.setSecondID(0);
+                    tempMessages.setFirstID(Integer.parseInt(temp));
+                    check = true;
+                    continue;
+                }
+                if (m == '\n') {
+                    tempMessages.setMessage(temp);
+                    tailOfMessage.add(tempMessages);
+                    temp = "";
+                    check = false;
+                }
+                else {
+                    temp += m;
+                }
+            }
+            tempMessages.setMessage(temp);
+            tailOfMessage.add(tempMessages);
+            for (int i = tailOfMessage.size() - 1; i >= 0; i--) {
+                if (tailOfMessage.get(i).getFirstID() == userService.getInMemoryUser().getId()){
+                    tailOfMessage.remove(i);
+                    break;
+                }
+            }
+            userService.DeleteMessage(messagesOfUser.getId());
+            User companion = (User) session.getAttribute("companion");
+            Message newMessage = new Message();
+            newMessage.setFirstID(userService.getInMemoryUser().getId());
+            newMessage.setSecondID(companion.getId());
+            String tempNewMessage = "";
+            for (int i = 0; i < tailOfMessage.size(); i++) {
+                tempNewMessage += tailOfMessage.get(i).getMessage();
+            }
+            if (!tempNewMessage.equals("")) {
+                newMessage.setMessage(tempNewMessage);
+                userService.AddMessage(newMessage);
+            }
+        }
+        allow = false;
         model.addAttribute("tailOfMessage", tailOfMessage);
         model.addAttribute("user", userService.getInMemoryUser());
         model.addAttribute("userClick", session.getAttribute("companion"));
+        model.addAttribute("allow", allow);
         return "PageOfUser";
     }
 
@@ -267,7 +314,7 @@ public class UserController {
             model.addAttribute("tailOfMessage", null);
             return "PageOfUser";
         }
-
+        boolean allow = false;
         List<Message> allMessage = userService.getAllOfMessage();
         Message messagesOfUser = allMessage.stream().
                 filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
@@ -314,6 +361,7 @@ public class UserController {
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", tailOfMessage);
+            model.addAttribute("allow", allow);
 
             return "PageOfUser";
         }
@@ -360,6 +408,7 @@ public class UserController {
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", tailOfMessage);
+            model.addAttribute("allow", allow);
             return "PageOfUser";
         }
     }
@@ -399,23 +448,9 @@ public class UserController {
         return "historyOfMessages";
     }
 
-    @GetMapping("/{email}")
-    public User FindUserByEmail(@PathVariable String email) {
-        return userService.FindUserByEmail(email);
-    }
-
     @PutMapping("updateUser")
     public User updateUser(@RequestBody User user) {
         return userService.UpdateUser(user);
-    }
-
-    @GetMapping("findById/{id}")
-    public ResponseEntity<User> FindUserById(@PathVariable long id) {
-        User user = userService.FindUserById(id);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("deleteUser/{email}")

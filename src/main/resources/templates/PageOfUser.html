@@ -23,6 +23,7 @@
             </div>
             <div th:id="GeneralInfo">
                 <h1 th:text="${userClick != null} ? ${userClick.getName()} + ' ' + ${userClick.getLastName()} : 'Такого пользователя не существует'"></h1>
+                <a th:href="@{/api/v1/users/{id}(id=${userClick.getId()}, allow=true)}" id="deleteMessageClick">Удалить сообщение</a>
                 <div id="MessageForm">
                     <ul th:if="${#lists.size(tailOfMessage) > 0}">
                         <li th:each="t : ${tailOfMessage}">

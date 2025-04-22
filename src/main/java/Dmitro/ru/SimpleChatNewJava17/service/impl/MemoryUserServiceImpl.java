@@ -47,6 +47,11 @@ public class MemoryUserServiceImpl implements UserService {
     }
 
     @Override
+    public void DeleteMessage(long id) {
+
+    }
+
+    @Override
     public User FindUserById(long id) {
         return userDAO.FindUserById(id);
     }

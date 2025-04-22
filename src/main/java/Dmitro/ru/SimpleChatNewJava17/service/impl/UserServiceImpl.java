@@ -61,6 +61,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void DeleteMessage(long id) {
+        Message messageForDrop = messageRepository.findAll().stream().
+                filter(message -> message.getId() == id).findFirst().orElse(null);
+        if (messageForDrop != null) {
+            messageRepository.delete(messageForDrop);
+        }
+    }
+
+    @Override
     public User FindUserById(long id) {
         return userRepository.findById(id).orElse(null);
     }
