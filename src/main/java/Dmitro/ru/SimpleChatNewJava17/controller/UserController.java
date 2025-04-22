@@ -241,7 +241,7 @@ public class UserController {
                 check = true;
                 continue;
             }
-            if (m == '\n') {
+            if (m == '\n' && check) {
                 tempMessages.setMessage(temp);
                 tailOfMessage.add(tempMessages);
                 temp = "";
@@ -251,8 +251,6 @@ public class UserController {
                 temp += m;
             }
         }
-        tempMessages.setMessage(temp);
-        tailOfMessage.add(tempMessages);
         // переписываю список, убирая сообщения пользователя, удаляя целый блок сообщения и создавая новый
         if (allow) {
             tailOfMessage.clear();
@@ -263,10 +261,9 @@ public class UserController {
                     tempMessages.setSecondID(0);
                     tempMessages.setFirstID(Integer.parseInt(temp));
                     check = true;
-                    continue;
                 }
-                if (m == '\n') {
-                    tempMessages.setMessage(temp);
+                if (m == '\n' && check) {
+                    tempMessages.setMessage(temp + '\n');
                     tailOfMessage.add(tempMessages);
                     temp = "";
                     check = false;
@@ -295,6 +292,46 @@ public class UserController {
             if (!tempNewMessage.equals("")) {
                 newMessage.setMessage(tempNewMessage);
                 userService.AddMessage(newMessage);
+            }
+            tailOfMessage.clear();
+            temp = "";
+            allMessage = userService.getAllOfMessage();
+            messagesOfUser = allMessage.stream().
+                    filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
+                            m.getSecondID() == ((User) session.getAttribute("companion")).getId())
+                    .findFirst().orElse(null);
+            if (messagesOfUser == null) {
+                messagesOfUser = allMessage.stream().
+                        filter(m -> m.getFirstID() == ((User) session.getAttribute("companion")).getId() &&
+                                m.getSecondID() == userService.getInMemoryUser().getId())
+                        .findFirst().orElse(null);
+            }
+            if (messagesOfUser == null){
+                model.addAttribute("tailOfMessage", new ArrayList<>());
+                model.addAttribute("user", userService.getInMemoryUser());
+                model.addAttribute("userClick", session.getAttribute("companion"));
+                return "PageOfUser";
+            }
+            check = false;
+            // формирую обновлённый список
+            for (char m : messagesOfUser.getMessage().toCharArray()) {
+                if (!check && m == ' ') {
+                    tempMessages = new Message();
+                    tempMessages.setSecondID(0);
+                    tempMessages.setFirstID(Integer.parseInt(temp));
+                    temp = "";
+                    check = true;
+                    continue;
+                }
+                if (m == '\n' && check) {
+                    tempMessages.setMessage(temp);
+                    tailOfMessage.add(tempMessages);
+                    temp = "";
+                    check = false;
+                }
+                else {
+                    temp += m;
+                }
             }
         }
         allow = false;
@@ -331,12 +368,13 @@ public class UserController {
             User companion = (User) session.getAttribute("companion");
             newMessage.setFirstID(userService.getInMemoryUser().getId());
             newMessage.setSecondID(companion.getId());
-            newMessage.setMessage(userService.getInMemoryUser().getId() + " " + message);
+            newMessage.setMessage(userService.getInMemoryUser().getId() + " " + message + '\n');
             userService.AddMessage(newMessage);
             List<Message> tailOfMessage = new ArrayList<>();
             Message tempMessages = new Message();
             boolean check = false;
             String temp = "";
+            // этот список я формирую с одним сообщением для цикла в html шаблоне
             for (char m : newMessage.getMessage().toCharArray()) {
                 if (!check && m == ' ') {
                     tempMessages = new Message();
@@ -356,8 +394,6 @@ public class UserController {
                     temp += m;
                 }
             }
-            tempMessages.setMessage(temp);
-            tailOfMessage.add(tempMessages);
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", tailOfMessage);
@@ -367,7 +403,7 @@ public class UserController {
         }
         else {
             userService.UpdateMessage(messagesOfUser.getId(),
-                    userService.getInMemoryUser().getId() + " " + message);
+                    userService.getInMemoryUser().getId() + " " + message + '\n');
             // обновляю список сообщений в allMessage
             allMessage = userService.getAllOfMessage();
             messagesOfUser = allMessage.stream().
@@ -403,8 +439,6 @@ public class UserController {
                     temp += m;
                 }
             }
-            tempMessages.setMessage(temp);
-            tailOfMessage.add(tempMessages);
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", tailOfMessage);

@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
     public Message UpdateMessage(long id, String newMessageContent) {
         Message existingMessage = messageRepository.findById(id).orElse(null);
         if (existingMessage != null) {
-            existingMessage.setMessage(existingMessage.getMessage() + "\n" + newMessageContent);
+            existingMessage.setMessage(existingMessage.getMessage() + newMessageContent);
             return messageRepository.save(existingMessage);
         }
         return null;
