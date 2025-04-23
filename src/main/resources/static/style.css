@@ -343,6 +343,66 @@ a{
     color: black !important;
 }
 
+#GeneralInfo #ActionOverUser > a{
+    position: relative;
+    display: inline-block;
+    border: white solid 1px;
+    padding: 1%;
+    border-radius: 20% / 100%;
+    color: white;
+    background-color: #07f;
+}
+
+#GeneralInfo #ActionOverUser > a:hover{
+    color: white;
+    background-color: #248aff;
+
+}
+
+#GeneralInfo #DeleteOfUser {
+    position: fixed;
+    top: 35%;
+    left: 38%;
+    background-color: white;
+    border: black solid 1px;
+    border-radius: 20% / 100%;
+    padding-top: 1%;
+    padding-bottom: 2%;
+    width: 25%;
+}
+
+/* Базовые стили для всех ссылок */
+#GeneralInfo #DeleteOfUser > a {
+    position: relative;
+    display: inline-block;
+    border: white solid 1px;
+    padding: 2% 7%;
+    border-radius: 30% / 100%;
+    color: white;
+    background-color: #07f;
+}
+
+/* Общее поведение при наведении для всех ссылок */
+#GeneralInfo #DeleteOfUser > a:hover {
+    color: white;
+    background-color: #248aff;
+}
+
+
+#GeneralInfo #FirstChoose{
+    transition: 0.5s;
+    margin-right: 2%;
+}
+/* Специальное поведение при наведении только для первой ссылки */
+#GeneralInfo #FirstChoose:hover {
+    color: red !important;
+    background-color: black !important;
+    box-shadow: 0 0 10px black !important;
+    border-color: black !important;
+    transition: 0.5s;
+}
+
+
 .form-group{
     padding: 3%;
 }

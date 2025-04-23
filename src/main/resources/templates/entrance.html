@@ -22,7 +22,7 @@
                 </div>
             </div>
             <div th:id="GeneralInfo">
-                <form th:action="@{/api/v1/entranceByEmail}" method="post">
+                <form th:action="@{/api/v1/entranceByEmail}" method="post" th:if="${user == null}">
                     <h2>Вход в аккаунт</h2>
                     <div class="form-group">
                         <label for="email">Email:</label>
@@ -34,8 +34,18 @@
                     </div>
                     <button type="submit" th:class="ButtonPost">Войти</button>
                 </form>
-                <div th:id="HrefForRegisration">
+                <div th:id="HrefForRegisration" th:if="${user == null}">
                     <a th:href="@{/api/v1/registrationForm}">Регистрация</a>
+                </div>
+                <div th:id="ActionOverUser" th:if="${user != null}">
+                    <H2>Настройки пользователя</H2>
+                    <a th:href="@{/api/v1/exitFromAccaunt(allow = true)}">Выход из аккаунта</a>
+                    <a th:href="@{/api/v1/deleteUser(allow = true)}">Удалить пользователя</a>
+                    <div th:if="${allowOfDelete == true}" th:id="DeleteOfUser">
+                        <h3 style="color: red;">Вы действительно хотите удалить свой аккаунт?</h3>
+                        <a th:href="@{/api/v1/deleteUser/True}" th:id="FirstChoose">Да</a>
+                        <a th:href="@{/api/v1/entrance}">Нет</a>
+                    </div>
                 </div>
                 <div th:if="${error}" style="color: red;">
                     <p th:text="${error}"></p>

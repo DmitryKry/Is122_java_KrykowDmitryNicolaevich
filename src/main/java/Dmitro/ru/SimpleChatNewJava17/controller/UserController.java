@@ -70,8 +70,10 @@ public class UserController {
         if (!users.isEmpty()) {
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("users", users);
+            model.addAttribute("allow", false);
         } else {
             model.addAttribute("user", "No users found");
+            model.addAttribute("allow", false);
         }
         return "entrance";
     }
@@ -89,9 +91,11 @@ public class UserController {
             userService.setInMemoryUser(user);
             model.addAttribute("user", user);
             session.setAttribute("user", user);
+            model.addAttribute("allow", false);
             return "entrance"; // страница после успешного входа
         } else {
             model.addAttribute("error", "Неверный email или пароль");
+            model.addAttribute("allow", false);
             return "entrance"; // вернуться на страницу входа с ошибкой
         }
     }
@@ -284,6 +288,7 @@ public class UserController {
             newMessage.setFirstID(userService.getInMemoryUser().getId());
             newMessage.setSecondID(companion.getId());
             String tempNewMessage = "";
+            // Формирую новое сообщение без удалённых блоков сообщений
             for (int i = 0; i < tailOfMessage.size(); i++) {
                 tempNewMessage += tailOfMessage.get(i).getMessage();
             }
@@ -485,8 +490,52 @@ public class UserController {
         return userService.UpdateUser(user);
     }
 
-    @DeleteMapping("deleteUser/{email}")
-    public void deleteUserByEmail(@PathVariable String email) {
-        userService.DeleteUser(email);
+    @GetMapping("deleteUser")
+    public String deleteUserByEmail(@RequestParam(defaultValue = "false") boolean allow,
+                                    Model model) {
+        if (allow) {
+            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("allow", allow);
+            model.addAttribute("allowOfDelete", true);
+            return "entrance"; // страница после успешного входа
+        }
+        model.addAttribute("user", null);
+        model.addAttribute("allow", allow);
+        model.addAttribute("allowOfDelete", false);
+        return "entrance";
+    }
+
+    @GetMapping("deleteUser/True")
+    public String deleteUserByEmailIfTrue(@RequestParam(defaultValue = "true") boolean allowOfDelete,
+                                    Model model) {
+        if (allowOfDelete) {
+            userService.DeleteUser(userService.getInMemoryUser().getEmail());
+            model.addAttribute("user", null);
+            model.addAttribute("allow", false);
+            model.addAttribute("allowOfDelete", true);
+            return "entrance"; // страница после успешного входа
+        }
+        model.addAttribute("user", null);
+        model.addAttribute("allow", false);
+        model.addAttribute("allowOfDelete", false);
+        return "entrance";
+    }
+
+    @GetMapping("exitFromAccaunt")
+    public String exitFromAccaunt(@RequestParam(defaultValue = "false") boolean allow,
+                                  Model model, HttpSession session) {
+        if (allow) {
+            if (userService.getInMemoryUser() != null) {
+                userService.setInMemoryUser(null);
+                model.addAttribute("user", null);
+                model.addAttribute("allow", allow);
+                model.addAttribute("allowOfDelete", false);
+                return "entrance"; // страница после успешного входа
+            }
+        }
+        model.addAttribute("user", null);
+        model.addAttribute("allow", allow);
+        model.addAttribute("allowOfDelete", false);
+        return "entrance";
     }
 }
