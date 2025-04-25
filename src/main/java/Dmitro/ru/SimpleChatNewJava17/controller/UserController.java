@@ -241,14 +241,13 @@ public class UserController {
             model.addAttribute("tailOfMessage", new ArrayList<>());
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
+            model.addAttribute("conversation", null);
             return "PageOfUser";
         }
         List<Message> tailOfMessage = new ArrayList<>();
         Message tempMessages = new Message();
         boolean check = false;
         String temp = "";
-        String forChooseConvertionOrMessageOfUser = ""; // в этой переменной будет храниться тело личных сообщений, либо бесед
-
         for (char m : messagesOfUser.getMessage().toCharArray()) {
             if (!check && m == ' ') {
                 tempMessages = new Message();
@@ -326,6 +325,7 @@ public class UserController {
                 model.addAttribute("tailOfMessage", new ArrayList<>());
                 model.addAttribute("user", userService.getInMemoryUser());
                 model.addAttribute("userClick", session.getAttribute("companion"));
+                model.addAttribute("conversation", null);
                 return "PageOfUser";
             }
             check = false;
@@ -355,6 +355,7 @@ public class UserController {
         model.addAttribute("user", userService.getInMemoryUser());
         model.addAttribute("userClick", session.getAttribute("companion"));
         model.addAttribute("allow", allow);
+        model.addAttribute("conversation", null);
         return "PageOfUser";
     }
 
@@ -370,6 +371,7 @@ public class UserController {
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", null);
+            model.addAttribute("conversation", null);
             return "PageOfUser";
         }
         boolean allow = false;
@@ -419,6 +421,7 @@ public class UserController {
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", tailOfMessage);
             model.addAttribute("allow", allow);
+            model.addAttribute("conversation", null);
 
             return "PageOfUser";
         }
@@ -462,6 +465,7 @@ public class UserController {
             }
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("userClick", session.getAttribute("companion"));
+            model.addAttribute("conversation", null);
             model.addAttribute("tailOfMessage", tailOfMessage);
             model.addAttribute("allow", allow);
             return "PageOfUser";
@@ -632,6 +636,7 @@ public class UserController {
         conversation.setNameOfConversation(nameOfConversion);
         conversation.setIDOwner(userService.getInMemoryUser().getId());
         conversation.setAdminIsOwner(AdminIsOwner);
+        conversation.setMessage("");
         userService.setNewConversation(conversation);
         conversation = userService.FindAllConversations().stream()
                 .filter(conversation1 -> conversation1.getNameOfConversation().equals(nameOfConversion))
@@ -649,24 +654,154 @@ public class UserController {
         return "historyOfMessages";
     }
 
-    // сообщения беседы, будут дублированы на примере ShapeFormForId
-    @GetMapping("/conversion/{id}")
-    public String conversion(@PathVariable long id, Model model) {
+    @PostMapping("/conversation/{id}/sendMessage")
+    public String conversionSendMessage(@RequestParam("message") String message,
+                                        @PathVariable("id") long id,
+                                        Model model, HttpSession session) {
+        Conversation newConversation = new Conversation();
+        newConversation.setMessage(userService.getInMemoryUser().getId() + message + '\n');
         Conversation conversation = userService.FindAllConversations().stream()
                 .filter(conv -> conv.getId() == id).findFirst().orElse(null);
         if (conversation == null) {
+            model.addAttribute("createOfConversion", false);
+            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("users", session.getAttribute("usersOfHistory"));
+            model.addAttribute("userCount", session.getAttribute("userCountMore"));
+            model.addAttribute("currentPage", session.getAttribute("currentPage"));
+            model.addAttribute("totalPages", session.getAttribute("totalPages"));
+            return "historyOfMessages";
+        }
+        newConversation.setNameOfConversation(conversation.getNameOfConversation());
+        userService.UpdateConversation(newConversation);
+        conversation = userService.FindAllConversations().stream()
+                .filter(conv -> conv.getId() == id).findFirst().orElse(null);
+        List<Message> tailOfMessage = new ArrayList<>();
+        Message tempMessages = new Message();
+        boolean check = false;
+        String temp = "";
+        for (char m : conversation.getMessage().toCharArray()) {
+            if (!check && m == ' ') {
+                tempMessages = new Message();
+                tempMessages.setSecondID(0);
+                tempMessages.setFirstID(Integer.parseInt(temp));
+                temp = "";
+                check = true;
+                continue;
+            }
+            if (m == '\n' && check) {
+                tempMessages.setMessage(temp);
+                tailOfMessage.add(tempMessages);
+                temp = "";
+                check = false;
+            }
+            else {
+                temp += m;
+            }
+        }
+
+        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("userClick", null);
+        model.addAttribute("conversation", conversation);
+        model.addAttribute("tailOfMessage", tailOfMessage);
+        model.addAttribute("allow", false);
+        return "PageOfUser";
+    }
+
+    // сообщения беседы, будут дублированы на примере ShapeFormForId
+    @GetMapping("/conversation/{id}")
+    public String conversion(@PathVariable long id, @RequestParam(defaultValue = "false") boolean allow,
+                             Model model, HttpSession session) {
+        Conversation conversation = userService.FindAllConversations().stream()
+                .filter(conv -> conv.getId() == id).findFirst().orElse(null);
+        if (conversation != null) {
             MidConversation midConversation = userService.FindAllMidConversations().stream()
                     .filter(midConv -> midConv.getIdOfConversation() == id
                             && midConv.getIdOfUser() == userService.getInMemoryUser().getId())
                     .findFirst().orElse(null);
-            if (midConversation == null) {
+            if (midConversation != null) {
+                List<Message> tailOfMessage = new ArrayList<>();
+                Message tempMessages = new Message();
+                boolean check = false;
+                String temp = "";
+                for (char m : conversation.getMessage().toCharArray()) {
+                    if (!check && m == ' ') {
+                        tempMessages = new Message();
+                        tempMessages.setSecondID(0);
+                        tempMessages.setFirstID(Integer.parseInt(temp));
+                        temp = "";
+                        check = true;
+                        continue;
+                    }
+                    if (m == '\n' && check) {
+                        tempMessages.setMessage(temp);
+                        tailOfMessage.add(tempMessages);
+                        temp = "";
+                        check = false;
+                    }
+                    else {
+                        temp += m;
+                    }
+                }
 
+                model.addAttribute("user", userService.getInMemoryUser());
+                model.addAttribute("userClick", null);
+                model.addAttribute("conversation", conversation);
+                model.addAttribute("tailOfMessage", tailOfMessage);
+                model.addAttribute("allow", false);
+                return "PageOfUser";
             }
         }
-
-        return "PageOfUser";
+        model.addAttribute("createOfConversion", false);
+        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("users", session.getAttribute("usersOfHistory"));
+        model.addAttribute("userCount", session.getAttribute("userCountMore"));
+        model.addAttribute("currentPage", session.getAttribute("currentPage"));
+        model.addAttribute("totalPages", session.getAttribute("totalPages"));
+        return "historyOfMessages";
     }
-
+    // переписываю список, убирая сообщения пользователя, удаляя целый блок сообщения и создавая новый
+                /*
+                if (allow) {
+                    tailOfMessage.clear();
+                    temp = "";
+                    for (char m : conversation.getMessage().toCharArray()) {
+                        if (!check && m == ' ') {
+                            tempMessages = new Message();
+                            tempMessages.setSecondID(0);
+                            tempMessages.setFirstID(Integer.parseInt(temp));
+                            check = true;
+                        }
+                        if (m == '\n' && check) {
+                            tempMessages.setMessage(temp + '\n');
+                            tailOfMessage.add(tempMessages);
+                            temp = "";
+                            check = false;
+                        }
+                        else {
+                            temp += m;
+                        }
+                    }
+                    for (int i = tailOfMessage.size() - 1; i >= 0; i--) {
+                        if (tailOfMessage.get(i).getFirstID() == userService.getInMemoryUser().getId()){
+                            tailOfMessage.remove(i);
+                            break;
+                        }
+                    }
+                    userService.deleteConversationById(conversation.getId());
+                    Message newMessage = new Message();
+                    newMessage.setFirstID(userService.getInMemoryUser().getId());
+                    String tempNewMessage = "";
+                    // Формирую новое сообщение без удалённых блоков сообщений
+                    for (int i = 0; i < tailOfMessage.size(); i++) {
+                        tempNewMessage += tailOfMessage.get(i).getMessage();
+                    }
+                    if (!tempNewMessage.equals("")) {
+                        newMessage.setMessage(tempNewMessage);
+                        userService.AddMessage(newMessage);
+                    }
+                    tailOfMessage.clear();
+                    temp = "";
+                 */
 }
 
 
