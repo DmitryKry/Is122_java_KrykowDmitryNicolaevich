@@ -24,6 +24,8 @@
             <div th:id="GeneralInfo">
                 <h2 th:id="COUNT"
                     th:text="'Количество сообщений' + ' - ' + (${users != null} ? ${userCount} : 0)"></h2>
+                <a th:href="@{/api/v1/historyOfMessages/createOfConversion}" th:id="createOfConversionButton">
+                    Создать беседу</a>
                 <ul th:if="${users != null}">
                     <li th:each="u : ${users}">
                         <div th:id="Transfer">
@@ -36,6 +38,25 @@
                         </div>
                     </li>
                 </ul>
+                <div th:if="${createOfConversion == true}" th:id="createOfConversionForm">
+                    <form th:action="@{/api/v1/historyOfMessages/createOfConversionPost}" method="post">
+                        <div th:class="form-group">
+                            <label for="nameOfConversion">Введите имя для беседы</label>
+                            <br>
+                            <input type="text" id="nameOfConversion" name="nameOfConversion" required>
+                        </div>
+                        <div th:class="form-group">
+                            <label for="AdminIsOwner">Кто может добавлять собеседников?</label>
+                            <br>
+                            <select id="AdminIsOwner" name="AdminIsOwner" required>
+                                <option value="false">Все участники</option>
+                                <option value="true">Только администратор</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="ButtonPost">Создать беседу</button>
+                    </form>
+                    <a th:href="@{/api/v1/historyOfMessages}" th:id="Cancel">Отменить</a>
+                </div>
                 <div id="pagination">
                     <a th:href="@{/api/v1/historyOfMessages(page=${currentPage - 1})}" th:if="${currentPage > 0}"></a>
                     <a th:href="@{/api/v1/historyOfMessages(page=${currentPage})}" th:if="${currentPage < 1}"></a>

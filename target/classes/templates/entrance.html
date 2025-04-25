@@ -26,10 +26,12 @@
                     <h2>Вход в аккаунт</h2>
                     <div class="form-group">
                         <label for="email">Email:</label>
+                        <br>
                         <input type="email" id="email" name="email" required>
                     </div>
-                    <div th:id="passwordForm">
+                    <div class="form-group">
                         <label for="password">Password:</label>
+                        <br>
                         <input type="password" id="password" name="password" required>
                     </div>
                     <button type="submit" th:class="ButtonPost">Войти</button>
@@ -49,42 +51,45 @@
 
                         <div class="form-group">
                             <label for="emailMore">Email:</label>
+                            <br>
                             <input type="email" id="emailMore" th:field="*{email}" required>
                         </div>
-
                         <div class="form-group">
                             <label for="name">Имя:</label>
+                            <br>
                             <input type="text" id="name" th:field="*{name}" required>
                         </div>
-
                         <div class="form-group">
                             <label for="lastName">Фамилия:</label>
+                            <br>
                             <input type="text" id="lastName" th:field="*{lastName}" required>
                         </div>
-
                         <div class="form-group">
                             <label for="dateOfBirth">Дата рождения:</label>
+                            <br>
                             <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required>
                         </div>
-
                         <div class="form-group">
                             <label for="gender">Гендер:</label>
+                            <br>
                             <select id="gender" th:field="*{gender}" required>
                                 <option value="male">Мужской</option>
                                 <option value="female">Женский</option>
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label for="city">Город:</label>
+                            <br>
                             <input type="text" id="city" th:field="*{city}" required>
                         </div>
-                        <div th:id="passwordForm">
+                        <div class="form-group">
                             <label for="passwordMore">Password:</label>
+                            <br>
                             <input type="password" id="passwordMore" th:field="*{password}" required>
                         </div>
-                        <div th:id="passwordForm">
+                        <div class="form-group">
                             <label for="testPassword">Repeat password:</label>
+                            <br>
                             <input type="password" id="testPassword" th:name="testPassword" required>
                         </div>
 

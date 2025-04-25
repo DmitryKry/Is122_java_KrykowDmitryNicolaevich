@@ -1,5 +1,6 @@
 package Dmitro.ru.SimpleChatNewJava17.controller;
 
+import Dmitro.ru.SimpleChatNewJava17.model.Conversation;
 import Dmitro.ru.SimpleChatNewJava17.model.Message;
 import Dmitro.ru.SimpleChatNewJava17.model.User;
 import Dmitro.ru.SimpleChatNewJava17.service.UserService;
@@ -25,6 +26,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    // выводит список пользователей и обрабатывает пагинацию пользователей
     @GetMapping("/users")
     public String FindAllUsers(@RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "1") int size,
@@ -64,6 +66,7 @@ public class UserController {
         return "users"; // Возвращаем имя шаблона
     }
 
+    // обеспечивает окно для авторизации пользователей
     @GetMapping("/entrance")
     public String SimpleReturnShape(Model model) {
         List<User> users = userService.FindAllUsers();
@@ -81,7 +84,7 @@ public class UserController {
         return "entrance";
     }
 
-
+    // авторизация пользователей
     @PostMapping("/entranceByEmail")
     public String EntranceByEmail(@RequestParam String email,
                                   @RequestParam String password,
@@ -105,6 +108,7 @@ public class UserController {
         }
     }
 
+    // предоставляет окно, который ведёт к методу Registration для регистрации новых пользователей
     @GetMapping("/registrationForm")
     public String RegistrationForm(Model model) {
         model.addAttribute("user", userService.getInMemoryUser());
@@ -112,7 +116,7 @@ public class UserController {
         return "registration";
     }
 
-
+    // обеспечивает добавление новых пользователей
     @PostMapping("/registration")
     public String Registration(@ModelAttribute("newUser") User newUser,
                                Model model,
@@ -133,6 +137,7 @@ public class UserController {
         }
     }
 
+    // Обеспечивает поиск пользователей по email, пагинацию обрабатывая в FindAllUsers по session
     @PostMapping("/findByEmail")
     public String FindUserByEmail(@RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "12") int size,
@@ -455,6 +460,7 @@ public class UserController {
         }
     }
 
+    // выводит список с пользователями, с которыми есть переписка
     @GetMapping("/historyOfMessages")
     public String historyOfMessages(@RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "1") int size,
@@ -484,12 +490,18 @@ public class UserController {
         }
         model.addAttribute("user", userService.getInMemoryUser());
         model.addAttribute("users", users);
+        session.setAttribute("usersOfHistory", users);
         model.addAttribute("userCount", findOfUsersForDialogMore.size());
+        session.setAttribute("userCountMore", findOfUsersForDialog.size());
         model.addAttribute("currentPage", page);
+        session.setAttribute("currentPage", page);
         model.addAttribute("totalPages", findOfUsersForDialogMore.size());
+        session.setAttribute("totalPages", findOfUsersForDialogMore.size());
+        model.addAttribute("createOfConversion", false);
         return "historyOfMessages";
     }
 
+    // метод, который может обновлять данные пользователя
     @PostMapping("/updateUser")
     public String updateUser(@ModelAttribute("editUser") User updatedUser,
                              Model model,
@@ -526,6 +538,7 @@ public class UserController {
         return "entrance"; // редирект на профиль
     }
 
+    // метод, который активирует окно с допольнительным подтверждением о удалении аккаунта пользователя
     @GetMapping("deleteUser")
     public String deleteUserByEmail(@RequestParam(defaultValue = "false") boolean allow,
                                     Model model) {
@@ -543,6 +556,7 @@ public class UserController {
         return "entrance";
     }
 
+    // само окно с дополнительным поддтверждение о удалении аккаунта пользователя (тут удаляется аккаунт)
     @GetMapping("deleteUser/True")
     public String deleteUserByEmailIfTrue(@RequestParam(defaultValue = "true") boolean allowOfDelete,
                                     Model model) {
@@ -561,6 +575,7 @@ public class UserController {
         return "entrance";
     }
 
+    // ссылка для выхода из аккаунта пользователя
     @GetMapping("exitFromAccaunt")
     public String exitFromAccaunt(@RequestParam(defaultValue = "false") boolean allow,
                                   Model model, HttpSession session) {
@@ -579,5 +594,36 @@ public class UserController {
         model.addAttribute("allow", allow);
         model.addAttribute("allowOfDelete", false);
         return "entrance";
+    }
+
+    // ссылка выводит окно для создания беседы
+    @GetMapping("/historyOfMessages/createOfConversion")
+    public String createOfConversion(Model model, HttpSession session) {
+        model.addAttribute("createOfConversion", true);
+        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("users", session.getAttribute("usersOfHistory"));
+        model.addAttribute("userCount", session.getAttribute("userCountMore"));
+        model.addAttribute("currentPage", session.getAttribute("currentPage"));
+        model.addAttribute("totalPages", session.getAttribute("totalPages"));
+        return "historyOfMessages";
+    }
+
+    // метод, который получает данные для создания беседы
+    @PostMapping("/historyOfMessages/createOfConversionPost")
+    public String createOfConversionAction(@RequestParam String nameOfConversion,
+                                           @RequestParam boolean AdminIsOwner,
+                                           Model model, HttpSession session) {
+        Conversation conversation = new Conversation();
+        conversation.setNameOfConversation(nameOfConversion);
+        conversation.setIDOwner(userService.getInMemoryUser().getId());
+        conversation.setAdminIsOwner(AdminIsOwner);
+        userService.setNewConversation(conversation);
+        model.addAttribute("createOfConversion", false);
+        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("users", session.getAttribute("usersOfHistory"));
+        model.addAttribute("userCount", session.getAttribute("userCountMore"));
+        model.addAttribute("currentPage", session.getAttribute("currentPage"));
+        model.addAttribute("totalPages", session.getAttribute("totalPages"));
+        return "historyOfMessages";
     }
 }

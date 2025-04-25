@@ -8,11 +8,11 @@ import lombok.Data;
 public class Conversation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    long ID;
+    private long id;
     @Lob
     @Column(columnDefinition = "TEXT")
     private String message;
-    String nameOfConversation;
-    long IDOwner;
-    boolean adminIsOwner;
+    private String nameOfConversation;
+    private long IDOwner;
+    private boolean adminIsOwner;
 }

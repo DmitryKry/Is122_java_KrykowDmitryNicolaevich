@@ -156,7 +156,8 @@ public class UserServiceImpl implements UserService {
             if (user != null) {
                 MidConversation midConversation = midConversationRepository.findAll().stream()
                         .filter(midConv -> midConv.getIdOfUser() == user.getId()
-                                && midConv.getIdOfConversation() == temp.getID()).findFirst().orElse(null);
+                                && midConv.getIdOfConversation() == temp.getId())
+                        .findFirst().orElse(null);
                 if (midConversation != null) {
                     return midConversation;
                 }

@@ -9,7 +9,7 @@ import lombok.Data;
 public class MidConversation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    long ID;
-    long IdOfUser;
-    long IdOfConversation;
+    private long ID;
+    private long IdOfUser;
+    private long IdOfConversation;
 }
