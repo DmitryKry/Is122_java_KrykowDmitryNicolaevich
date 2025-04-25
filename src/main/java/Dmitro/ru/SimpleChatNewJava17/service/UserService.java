@@ -1,6 +1,8 @@
 package Dmitro.ru.SimpleChatNewJava17.service;
 
+import Dmitro.ru.SimpleChatNewJava17.model.Conversation;
 import Dmitro.ru.SimpleChatNewJava17.model.Message;
+import Dmitro.ru.SimpleChatNewJava17.model.MidConversation;
 import Dmitro.ru.SimpleChatNewJava17.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,4 +26,8 @@ public interface UserService {
     void DeleteUser(String email);
     User getInMemoryUser();
     void setInMemoryUser(User user);
+    Conversation FindConversationById(String name);
+    Conversation setNewConversation(Conversation newConversation);
+    MidConversation FindMidConversationById(String nameOfConversation, long idOfUser);
+    MidConversation setNewMidConversation(MidConversation newConversation);
 }

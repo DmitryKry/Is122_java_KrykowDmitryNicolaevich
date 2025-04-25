@@ -1,6 +1,8 @@
 package Dmitro.ru.SimpleChatNewJava17.service.impl;
 
+import Dmitro.ru.SimpleChatNewJava17.model.Conversation;
 import Dmitro.ru.SimpleChatNewJava17.model.Message;
+import Dmitro.ru.SimpleChatNewJava17.model.MidConversation;
 import Dmitro.ru.SimpleChatNewJava17.model.User;
 import Dmitro.ru.SimpleChatNewJava17.repository.InMemoryUserDAO;
 import Dmitro.ru.SimpleChatNewJava17.service.UserService;
@@ -89,5 +91,25 @@ public class MemoryUserServiceImpl implements UserService {
 
     @Override
     public void setInMemoryUser(User user) {
+    }
+
+    @Override
+    public Conversation FindConversationById(String name) {
+        return null;
+    }
+
+    @Override
+    public Conversation setNewConversation(Conversation newConversation) {
+        return null;
+    }
+
+    @Override
+    public MidConversation FindMidConversationById(String nameOfConversation, long idOfUser) {
+        return null;
+    }
+
+    @Override
+    public MidConversation setNewMidConversation(MidConversation newConversation) {
+        return null;
     }
 }

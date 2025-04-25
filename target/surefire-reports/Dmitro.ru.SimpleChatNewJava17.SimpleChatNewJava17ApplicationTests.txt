@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: Dmitro.ru.SimpleChatNewJava17.SimpleChatNewJava17ApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.517 s -- in Dmitro.ru.SimpleChatNewJava17.SimpleChatNewJava17ApplicationTests

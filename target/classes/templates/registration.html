@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Регистрация</title>
+        <link rel="stylesheet" th:href="@{/style.css}">
+    </head>
+    <body>
+        <div th:id="ALL">
+            <div th:id="Menu">
+                <div th:id="UserText">
+                    <a th:text="${user != null} ? ${user.getName()} + ' ' + ${user.getLastName()} : 'Войдите в аккаунт'"></a>
+                </div>
+                <div th:id="Entrance">
+                    <a th:href="@{/api/v1/entrance}">Аккаунт</a>
+                </div>
+                <div th:id="User">
+                    <a th:href="@{/api/v1/users}">Пользователи</a>
+                </div>
+                <div th:if="${user != null}" th:id="historyOfMessages">
+                    <a th:href="@{/api/v1/historyOfMessages}">Истории сообщений</a>
+                </div>
+            </div>
+            <div th:id="GeneralInfo">
+                <form th:action="@{/api/v1/registration}" method="post" th:object="${newUser}">
+                    <h2 th:text="${error != null} ? ${error} : 'Регистрация'"
+                        th:style="${error != null} ? 'color: red;' : ''"></h2>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" th:field="*{email}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Имя:</label>
+                        <input type="text" id="name" th:field="*{name}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Фамилия:</label>
+                        <input type="text" id="lastName" th:field="*{lastName}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateOfBirth">Дата рождения:</label>
+                        <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Гендер:</label>
+                        <select id="gender" th:field="*{gender}" required>
+                            <option value="male">Мужской</option>
+                            <option value="female">Женский</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Город:</label>
+                        <input type="text" id="city" th:field="*{city}" required>
+                    </div>
+                    <div th:id="passwordForm">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" th:field="*{password}" required>
+                    </div>
+                    <div th:id="passwordForm">
+                        <label for="testPassword">Repeat password:</label>
+                        <input type="password" id="testPassword" th:name="testPassword" required>
+                    </div>
+                    <button type="submit" th:class="ButtonPost">Зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

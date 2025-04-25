@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Сообщения</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+    <body>
+        <div th:id="ALL">
+            <div th:id="Menu">
+                <div th:id="UserText">
+                    <a th:text="${user != null} ? ${user.getName()} + ' ' + ${user.getLastName()} : 'Войдите в аккаунт'"></a>
+                </div>
+                <div th:id="Entrance">
+                    <a th:href="@{/api/v1/entrance}">Аккаунт</a>
+                </div>
+                <div th:id="User">
+                    <a th:href="@{/api/v1/users}">Пользователи</a>
+                </div>
+                <div th:if="${user != null}" th:id="historyOfMessages">
+                    <a th:href="@{/api/v1/historyOfMessages}">Истории сообщений</a>
+                </div>
+            </div>
+            <div th:id="GeneralInfo">
+                <h1 th:text="${userClick != null} ? ${userClick.getName()} + ' ' + ${userClick.getLastName()} : 'Такого пользователя не существует'"></h1>
+                <a th:href="@{/api/v1/users/{id}(id=${userClick.getId()}, allow=true)}" id="deleteMessageClick">Удалить сообщение</a>
+                <div id="MessageForm">
+                    <ul th:if="${#lists.size(tailOfMessage) > 0}">
+                        <li th:each="t : ${tailOfMessage}">
+                            <div th:id="tailOfMessage" th:if="${t.getMessage().length() > 0 and t.getFirstID() != user.getId()}">
+                                <span th:text="${t.getMessage()}"></span>
+                            </div>
+                            <div th:id="tailOfMessageOwner" th:if="${t.getMessage().length() > 0 and t.getFirstID() == user.getId()}">
+                                <span th:text="${t.getMessage()}"></span>
+                            </div>
+                        </li>
+                        <li class="scroll-spacer"></li> <!-- пустой блок для отступа -->
+                    </ul>
+                </div>
+                <form th:action="@{/api/v1/users/message}" method="post">
+                    <input th:id="message" type="text" name="message" required>
+                    <button th:id="sendMessage" type="submit">Отправить</button>
+                </form>
+            </div>
+        </div>
+        <script>
+            window.onload = function() {
+                const messageContainer = document.getElementById('MessageForm');
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            };
+
+            // Если сообщения обновляются динамически (например, с помощью AJAX)
+            const messageContainer = document.getElementById('MessageForm');
+            const observer = new MutationObserver(() => {
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            });
+
+            observer.observe(messageContainer, { childList: true, subtree: true });
+        </script>
+    </body>
+</html>

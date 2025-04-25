@@ -1,10 +1,10 @@
 package Dmitro.ru.SimpleChatNewJava17.service.impl;
 
+import Dmitro.ru.SimpleChatNewJava17.model.Conversation;
 import Dmitro.ru.SimpleChatNewJava17.model.Message;
+import Dmitro.ru.SimpleChatNewJava17.model.MidConversation;
 import Dmitro.ru.SimpleChatNewJava17.model.User;
-import Dmitro.ru.SimpleChatNewJava17.repository.InMemoryUserDAO;
-import Dmitro.ru.SimpleChatNewJava17.repository.MessageRepository;
-import Dmitro.ru.SimpleChatNewJava17.repository.UserRepository;
+import Dmitro.ru.SimpleChatNewJava17.repository.*;
 import Dmitro.ru.SimpleChatNewJava17.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -24,6 +24,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final InMemoryUserDAO userDAO;
     private final MessageRepository messageRepository;
+    private final ConversationRepository conversationRepository;
+    private final MidConversationRepository midConversationRepository;
     @Override
     public List<User> FindAllUsers() {
         return userRepository.findAll();
@@ -124,5 +126,48 @@ public class UserServiceImpl implements UserService {
     @Override
     public void setInMemoryUser(User user) {
         userDAO.SetInMemoryUserDAO(user);
+    }
+
+    @Override
+    public Conversation FindConversationById(String name) {
+        Conversation temp = conversationRepository.findAll().stream()
+                .filter(conv -> conv.getNameOfConversation().equals(name))
+                .findFirst().orElse(null);
+        if (temp != null) {
+            return temp;
+        }
+        return null;
+    }
+
+    @Override
+    public Conversation setNewConversation(Conversation newConversation) {
+        conversationRepository.save(newConversation);
+        return newConversation;
+    }
+
+    @Override
+    public MidConversation FindMidConversationById(String nameOfConversation, long idOfUser) {
+        Conversation temp = conversationRepository.findAll().stream()
+                .filter(conv -> conv.getNameOfConversation().equals(nameOfConversation))
+                .findFirst().orElse(null);
+        if (temp != null) {
+            User user = userRepository.findAll().stream().filter(conv -> conv.getId() == idOfUser)
+                    .findFirst().orElse(null);
+            if (user != null) {
+                MidConversation midConversation = midConversationRepository.findAll().stream()
+                        .filter(midConv -> midConv.getIdOfUser() == user.getId()
+                                && midConv.getIdOfConversation() == temp.getID()).findFirst().orElse(null);
+                if (midConversation != null) {
+                    return midConversation;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public MidConversation setNewMidConversation(MidConversation newConversation) {
+        midConversationRepository.save(newConversation);
+        return newConversation;
     }
 }

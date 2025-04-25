@@ -1,0 +1,413 @@
+body{
+    color: black;
+    background-color: #fcfcfc;
+    user-select: none;
+    overflow-y: hidden;
+}
+
+a{
+    text-decoration: none;
+}
+
+#Menu{
+    width: 100%;
+    border: 1px solid black;
+    height: 50px;
+    position: fixed; /* Лучше fixed для меню */
+    top: 0.1%; /* Фиксируем вверху */
+    left: 0%;
+    margin-bottom: 4%;
+    background: white;
+    z-index: 1000;
+    transition: 0.5s;
+}
+
+#Menu:hover{
+    box-shadow: 0px 0px 10px black;
+}
+
+#Menu > div:hover{
+    background-color: black;
+    color: #fcfcfc;
+    transform: translateY(-2.5px)
+}
+
+#Menu > div{
+    top: 7px;
+    transition: 0.5s;
+    border: 1px solid black;
+    height: auto;
+    border-radius: 25% / 100%;
+    color: black;
+    width: auto;
+    position: fixed;
+}
+
+#Menu > div > a{
+    display: inline-block;
+    color: black;
+    width: auto;
+    user-select: none;
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 25% / 100%;
+}
+
+#Menu > div > a:hover{
+    color: white;
+}
+
+#Menu #Entrance{
+    margin-left: 90%;
+}
+
+#Menu #User{
+    margin-left: 70%;
+}
+
+#Menu #UserText{
+    margin-left: 47%;
+}
+
+#Menu #historyOfMessages{
+    margin-left: 15%;
+}
+
+#GeneralInfo{
+    width: 45%;
+    height: 93%;
+    margin-left: 27%;
+    border: 1px solid black;
+    position: absolute;
+    top: 6%;
+    text-align: center;
+    border-radius: 2% / 2%;
+}
+
+#GeneralInfo #deleteMessageClick{
+    display: inline-block;
+    position: absolute;
+    right: 3%;
+    top: 3%;
+    color: white;
+    background-color: #07f;
+    border: white solid 1px;
+    padding: 1%;
+    border-radius: 20% / 100%;
+    transition: 0.5s;
+}
+
+#GeneralInfo #deleteMessageClick:hover{
+    color: red;
+    background-color: black;
+    box-shadow: 0px 0px 10px black;
+    border: black solid 1px;
+}
+
+
+#GeneralInfo ul {
+    list-style-type: none;
+    max-width: 100%;
+    padding-left: 0;
+    margin: 0;
+    padding-top: 2%;
+}
+
+#GeneralInfo ul > li:last-child{
+    border-bottom: 1px solid black;
+}
+
+#GeneralInfo h2{
+    align-items: center;
+}
+#GeneralInfo #Transfer{
+    border-top: 1px solid black;
+    height: auto;
+    position: relative;
+    width: auto;
+    transition: 0.5s;
+    color: black;
+}
+
+#GeneralInfo #Transfer > a{
+    display: inline-block;
+    color: black;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    width: 100%;
+}
+
+#GeneralInfo #Transfer:hover > a{
+    color: white;
+}
+
+#GeneralInfo #Transfer:hover{
+    background-color: black;
+    color: white;
+    box-shadow: 0px 0px 10px black;
+}
+
+#GeneralInfo #HrefForRegisration{
+    transition: 0.5s;
+    border: 0px solid black;
+    height: auto;
+    border-radius: 10% / 25%;
+    margin-top: 0.05%;
+    padding-top: 1%;
+    text-decoration: none; /* Убирает подчёркивание */
+    width: auto;
+    position: relative;
+}
+
+#GeneralInfo #HrefForRegisration > a{
+    display: inline-block;
+    margin-top: 2%;
+    transition: all 0.5s;
+    color: black;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-left: 2%;
+    padding-right: 2%;
+    border-radius: 25% / 100%;
+    border: black solid 1px;
+}
+
+#GeneralInfo #HrefForRegisration > a:hover{
+    background-color: black;
+    color: white;
+    position: relative;
+    transform: translateY(-2.5px)
+}
+
+#GeneralInfo #pagination{
+    position: absolute;
+    left: 49%;
+    bottom: 0.2%;
+    display: flex; /* Используем flexbox для выравнивания элементов по горизонтали */
+    justify-content: center;
+    gap: 50%;
+}
+
+#GeneralInfo #pagination > a {
+    background-color: white;
+    display: inline-block;
+    border-radius: 100% / 100%;
+    padding: 300%;
+    border: black solid 1px;
+    transition: 0.5s;
+}
+
+#GeneralInfo #pagination > a:hover{
+    background-color: black;
+}
+
+
+#GeneralInfo .ButtonPost{
+    background-color: white;
+    color: black;
+    transition: 0.5s;
+    border: black solid 1px;
+    margin-top: 1%;
+    padding-bottom: 1%;
+    padding-top: 1%;
+    padding-right: 2%;
+    padding-left: 2%;
+    border-radius: 15% / 100%;
+}
+
+#GeneralInfo .ButtonPost:active{
+    background-color: white !important;
+    color: black !important;
+}
+
+#GeneralInfo .ButtonPost:hover{
+    background-color: #373737;
+    color: white;
+    transform: translateY(-2.5px)
+}
+
+#GeneralInfo #MessageForm{
+    position: relative;
+    border: black solid 1px;
+    width: 94%;
+    left: 3%;
+    height: 85%;
+    border-radius: 2% / 2%;
+    margin-bottom: 0.5%;
+    display: flex;
+    user-select: text;
+    overflow-y: auto;
+}
+
+#GeneralInfo #MessageForm ul {
+    list-style-type: none; /* Убираем маркеры списка */
+    padding: 0; /* Убираем отступы у списка */
+    margin: 0; /* Убираем внешние отступы у списка */
+}
+
+#GeneralInfo #MessageForm li{
+    display: flex; /* Используем flex для лучшего контроля */
+    justify-content: flex-start; /* По умолчанию сообщения выравниваются влево */
+    padding-left: 0px;
+}
+
+#GeneralInfo #MessageForm #tailOfMessage{
+    border: white solid 1px;
+    display: block;
+    margin-left: 1%;
+    text-align: center;
+    margin-top: 2%;
+    padding: 3%;
+    width: 400px; /* фиксированная ширина */
+    max-width: 100%; /* на всякий случай, чтобы не вылазило */
+    word-wrap: break-word; /* перенос слов */
+    overflow-wrap: break-word; /* для поддержки */
+    border-radius: 5% / 50%;
+    background-color: #07f;
+    color: white;
+}
+
+#GeneralInfo #MessageForm li div[id="tailOfMessageOwner"]{
+    border: white solid 1px;
+    display: block;
+    position: relative;
+    text-align: center;
+    right: -102%;
+    margin-left: auto; /* Это заставит блок прижиматься к правому краю */
+    margin-right: 1%; /* Отступ от правого края */
+    margin-top: 2%;
+    padding: 3%;
+    width: 400px; /* фиксированная ширина */
+    max-width: 100%; /* на всякий случай, чтобы не вылазило */
+    word-wrap: break-word; /* перенос слов */
+    overflow-wrap: break-word; /* для поддержки */
+    border-radius: 5% / 50%;
+    background-color: #07f;
+    color: white;
+}
+
+#GeneralInfo #MessageForm li div[id="tailOfMessageOwner"]:hover{
+    background-color: #248aff;
+
+}
+
+#GeneralInfo #MessageForm #tailOfMessage:hover{
+    background-color: #248aff;
+}
+
+#GeneralInfo #MessageForm ul li:last-child div#tailOfMessage {
+    margin-bottom: 20px !important;
+}
+
+#GeneralInfo #MessageForm ul li:last-child{
+    border-bottom: 0px;
+}
+
+#GeneralInfo #MessageForm .scroll-spacer {
+    height: 30px; /* или сколько нужно отступа */
+}
+
+#GeneralInfo #message{
+    display: block;
+    width: 80%;
+    height: 25px;
+    position: relative;
+    padding: 0.5%;
+    padding-left: 2%;
+    left: 3%;
+    border: black solid 3px;
+    border-radius: 5% / 100%;
+
+}
+
+#GeneralInfo #sendMessage{
+    position: relative;
+    background-color: #07f;
+    color: white;
+    left: 42%;
+    top: -40px;
+    padding: 1.5%;
+    border-radius: 40% / 100%;
+    border: white;
+}
+
+#GeneralInfo #sendMessage:hover{
+    background-color: #248aff;
+    color: white;
+}
+
+#GeneralInfo #sendMessage:active{
+    background-color: white !important;
+    color: black !important;
+}
+
+#GeneralInfo #ActionOverUser > a{
+    position: relative;
+    display: inline-block;
+    border: white solid 1px;
+    padding: 1%;
+    border-radius: 20% / 100%;
+    color: white;
+    background-color: #07f;
+}
+
+#GeneralInfo #ActionOverUser > a:hover{
+    color: white;
+    background-color: #248aff;
+
+}
+
+#GeneralInfo #DeleteOfUser {
+    position: fixed;
+    top: 35%;
+    left: 38%;
+    background-color: white;
+    border: black solid 1px;
+    border-radius: 20% / 100%;
+    padding-top: 1%;
+    padding-bottom: 2%;
+    width: 25%;
+}
+
+/* Базовые стили для всех ссылок */
+#GeneralInfo #DeleteOfUser > a {
+    position: relative;
+    display: inline-block;
+    border: white solid 1px;
+    padding: 2% 7%;
+    border-radius: 30% / 100%;
+    color: white;
+    background-color: #07f;
+}
+
+/* Общее поведение при наведении для всех ссылок */
+#GeneralInfo #DeleteOfUser > a:hover {
+    color: white;
+    background-color: #248aff;
+}
+
+
+#GeneralInfo #FirstChoose{
+    transition: 0.5s;
+    margin-right: 2%;
+}
+/* Специальное поведение при наведении только для первой ссылки */
+#GeneralInfo #FirstChoose:hover {
+    color: red !important;
+    background-color: black !important;
+    box-shadow: 0 0 10px black !important;
+    border-color: black !important;
+    transition: 0.5s;
+}
+
+
+.form-group{
+    padding: 3%;
+}
+
+#passwordForm{
+    margin-left: -4%;
+    padding: 3%;
+}

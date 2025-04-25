@@ -41,7 +41,7 @@ public class UserController {
         }
         else {
             findAllUsers = (List<User>) session.getAttribute("users");
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 12; i++) {
                 if ((i + page) < findAllUsers.size())
                     users.add(findAllUsers.get(i + page));
             }
@@ -71,9 +71,12 @@ public class UserController {
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("users", users);
             model.addAttribute("allow", false);
+            model.addAttribute("editUser", new User());
+
         } else {
             model.addAttribute("user", "No users found");
             model.addAttribute("allow", false);
+            model.addAttribute("editUser", new User());
         }
         return "entrance";
     }
@@ -92,10 +95,12 @@ public class UserController {
             model.addAttribute("user", user);
             session.setAttribute("user", user);
             model.addAttribute("allow", false);
+            model.addAttribute("editUser", new User());
             return "entrance"; // страница после успешного входа
         } else {
             model.addAttribute("error", "Неверный email или пароль");
             model.addAttribute("allow", false);
+            model.addAttribute("editUser", new User());
             return "entrance"; // вернуться на страницу входа с ошибкой
         }
     }
@@ -485,9 +490,40 @@ public class UserController {
         return "historyOfMessages";
     }
 
-    @PutMapping("updateUser")
-    public User updateUser(@RequestBody User user) {
-        return userService.UpdateUser(user);
+    @PostMapping("/updateUser")
+    public String updateUser(@ModelAttribute("editUser") User updatedUser,
+                             Model model,
+                             HttpSession session,
+                             @RequestParam("testPassword") String testPassword) {
+
+        if(!testPassword.equals(updatedUser.getPassword())) {
+            model.addAttribute("error", "Пароли не сходяться!");
+            return "entrance";
+        }
+        User existingUser = userService.FindUserById(updatedUser.getId());
+
+
+        if (existingUser == null) {
+            model.addAttribute("error", "Пользователь не найден!");
+            return "entrance";
+        }
+
+        // Проверка на email: если новый email уже занят другим
+        User userWithSameEmail = userService.FindUserByEmail(updatedUser.getEmail());
+        if (userWithSameEmail != null && (userWithSameEmail.getId() != updatedUser.getId())) {
+            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("error", "Email уже используется другим пользователем!");
+            model.addAttribute("editUser", updatedUser); // сохранить данные при возврате
+            return "entrance";
+        }
+
+        userService.UpdateUser(updatedUser);
+        session.setAttribute("editUser", updatedUser);
+        model.addAttribute("editUser", updatedUser);
+        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("allow", false);
+        model.addAttribute("allowOfDelete", false);// обновляем пользователя в сессии
+        return "entrance"; // редирект на профиль
     }
 
     @GetMapping("deleteUser")
@@ -497,8 +533,10 @@ public class UserController {
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("allow", allow);
             model.addAttribute("allowOfDelete", true);
+            model.addAttribute("editUser", new User());
             return "entrance"; // страница после успешного входа
         }
+        model.addAttribute("editUser", new User());
         model.addAttribute("user", null);
         model.addAttribute("allow", allow);
         model.addAttribute("allowOfDelete", false);
@@ -513,9 +551,11 @@ public class UserController {
             model.addAttribute("user", null);
             model.addAttribute("allow", false);
             model.addAttribute("allowOfDelete", true);
+            model.addAttribute("editUser", new User());
             return "entrance"; // страница после успешного входа
         }
         model.addAttribute("user", null);
+        model.addAttribute("editUser", new User());
         model.addAttribute("allow", false);
         model.addAttribute("allowOfDelete", false);
         return "entrance";
@@ -530,10 +570,12 @@ public class UserController {
                 model.addAttribute("user", null);
                 model.addAttribute("allow", allow);
                 model.addAttribute("allowOfDelete", false);
+                model.addAttribute("editUser", new User());
                 return "entrance"; // страница после успешного входа
             }
         }
         model.addAttribute("user", null);
+        model.addAttribute("editUser", new User());
         model.addAttribute("allow", allow);
         model.addAttribute("allowOfDelete", false);
         return "entrance";

@@ -1,0 +1,11 @@
+Dmitro\ru\SimpleChatNewJava17\repository\DataInitializer.class
+Dmitro\ru\SimpleChatNewJava17\service\impl\UserServiceImpl.class
+Dmitro\ru\SimpleChatNewJava17\repository\InMemoryUserDAO.class
+Dmitro\ru\SimpleChatNewJava17\service\UserService.class
+Dmitro\ru\SimpleChatNewJava17\model\Message.class
+Dmitro\ru\SimpleChatNewJava17\service\impl\MemoryUserServiceImpl.class
+Dmitro\ru\SimpleChatNewJava17\SimpleChatNewJava17Application.class
+Dmitro\ru\SimpleChatNewJava17\model\User.class
+Dmitro\ru\SimpleChatNewJava17\repository\UserRepository.class
+Dmitro\ru\SimpleChatNewJava17\repository\MessageRepository.class
+Dmitro\ru\SimpleChatNewJava17\controller\UserController.class

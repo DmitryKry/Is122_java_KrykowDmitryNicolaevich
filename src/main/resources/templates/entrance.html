@@ -41,6 +41,55 @@
                     <H2>Настройки пользователя</H2>
                     <a th:href="@{/api/v1/exitFromAccaunt(allow = true)}">Выход из аккаунта</a>
                     <a th:href="@{/api/v1/deleteUser(allow = true)}">Удалить пользователя</a>
+                    <form th:action="@{/api/v1/updateUser}" method="post" th:object="${editUser}">
+                        <h2 th:text="${error != null} ? ${error} : 'Редактирование профиля'"
+                            th:style="${error != null} ? 'color: red;' : ''"></h2>
+
+                        <input type="hidden" th:field="*{id}"/> <!-- обязательно, чтобы понимать, кого редактируем -->
+
+                        <div class="form-group">
+                            <label for="emailMore">Email:</label>
+                            <input type="email" id="emailMore" th:field="*{email}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="name">Имя:</label>
+                            <input type="text" id="name" th:field="*{name}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastName">Фамилия:</label>
+                            <input type="text" id="lastName" th:field="*{lastName}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dateOfBirth">Дата рождения:</label>
+                            <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gender">Гендер:</label>
+                            <select id="gender" th:field="*{gender}" required>
+                                <option value="male">Мужской</option>
+                                <option value="female">Женский</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city">Город:</label>
+                            <input type="text" id="city" th:field="*{city}" required>
+                        </div>
+                        <div th:id="passwordForm">
+                            <label for="passwordMore">Password:</label>
+                            <input type="password" id="passwordMore" th:field="*{password}" required>
+                        </div>
+                        <div th:id="passwordForm">
+                            <label for="testPassword">Repeat password:</label>
+                            <input type="password" id="testPassword" th:name="testPassword" required>
+                        </div>
+
+                        <button type="submit" class="ButtonPost">Сохранить изменения</button>
+                    </form>
                     <div th:if="${allowOfDelete == true}" th:id="DeleteOfUser">
                         <h3 style="color: red;">Вы действительно хотите удалить свой аккаунт?</h3>
                         <a th:href="@{/api/v1/deleteUser/True}" th:id="FirstChoose">Да</a>

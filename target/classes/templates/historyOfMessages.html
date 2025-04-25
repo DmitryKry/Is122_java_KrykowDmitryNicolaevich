@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Пользователи</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+    <body>
+        <div th:id="ALL">
+            <div th:id="Menu">
+                <div th:id="UserText">
+                    <a th:text="${user != null} ? ${user.getName()} + ' ' + ${user.getLastName()} : 'Войдите в аккаунт'"></a>
+                </div>
+                <div th:id="Entrance">
+                    <a th:href="@{/api/v1/entrance}">Аккаунт</a>
+                </div>
+                <div th:id="User">
+                    <a th:href="@{/api/v1/users}">Пользователи</a>
+                </div>
+                <div th:if="${user != null}" th:id="historyOfMessages">
+                    <a th:href="@{/api/v1/historyOfMessages}">Истории сообщений</a>
+                </div>
+            </div>
+            <div th:id="GeneralInfo">
+                <h2 th:id="COUNT"
+                    th:text="'Количество сообщений' + ' - ' + (${users != null} ? ${userCount} : 0)"></h2>
+                <ul th:if="${users != null}">
+                    <li th:each="u : ${users}">
+                        <div th:id="Transfer">
+                            <a th:href="@{/api/v1/users/{id}(id=${u.id})}">
+                                <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
+                                (<span th:text="${u.email}"></span>)
+                                <span th:text="'возраст - ' + ${u.getAge()}"></span>
+                                <span th:text="${u.gender.equals('male')} ? 'M' : 'Ж'"></span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+                <div id="pagination">
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage - 1})}" th:if="${currentPage > 0}"></a>
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage})}" th:if="${currentPage < 1}"></a>
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}"></a>
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage})}" th:if="${currentPage == totalPages - 1}"></a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
