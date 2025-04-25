@@ -17,9 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/api/v1")
@@ -248,11 +246,14 @@ public class UserController {
         Message tempMessages = new Message();
         boolean check = false;
         String temp = "";
+        Map<Long, String> userNames = new HashMap<>();
         for (char m : messagesOfUser.getMessage().toCharArray()) {
             if (!check && m == ' ') {
                 tempMessages = new Message();
                 tempMessages.setSecondID(0);
                 tempMessages.setFirstID(Integer.parseInt(temp));
+                User user = userService.FindUserById(tempMessages.getFirstID());
+                userNames.put(tempMessages.getFirstID(), user.getName() + " " + user.getLastName());
                 temp = "";
                 check = true;
                 continue;
@@ -330,11 +331,14 @@ public class UserController {
             }
             check = false;
             // формирую обновлённый список
+            userNames = new HashMap<>();
             for (char m : messagesOfUser.getMessage().toCharArray()) {
                 if (!check && m == ' ') {
                     tempMessages = new Message();
                     tempMessages.setSecondID(0);
                     tempMessages.setFirstID(Integer.parseInt(temp));
+                    User user = userService.FindUserById(tempMessages.getFirstID());
+                    userNames.put(tempMessages.getFirstID(), user.getName() + " " + user.getLastName());
                     temp = "";
                     check = true;
                     continue;
@@ -356,6 +360,7 @@ public class UserController {
         model.addAttribute("userClick", session.getAttribute("companion"));
         model.addAttribute("allow", allow);
         model.addAttribute("conversation", null);
+        model.addAttribute("userNames", userNames);
         return "PageOfUser";
     }
 
@@ -444,11 +449,14 @@ public class UserController {
             Message tempMessages = new Message();
             boolean check = false;
             String temp = "";
+            Map<Long, String> userNames = new HashMap<>();
             for (char m : messagesOfUser.getMessage().toCharArray()) {
                 if (!check && m == ' ') {
                     tempMessages = new Message();
                     tempMessages.setSecondID(0);
                     tempMessages.setFirstID(Integer.parseInt(temp));
+                    User user = userService.FindUserById(tempMessages.getFirstID());
+                    userNames.put(tempMessages.getFirstID(), user.getName() + " " + user.getLastName());
                     temp = "";
                     check = true;
                     continue;
@@ -468,6 +476,7 @@ public class UserController {
             model.addAttribute("conversation", null);
             model.addAttribute("tailOfMessage", tailOfMessage);
             model.addAttribute("allow", allow);
+            model.addAttribute("userNames", userNames);
             return "PageOfUser";
         }
     }
@@ -658,8 +667,9 @@ public class UserController {
     public String conversionSendMessage(@RequestParam("message") String message,
                                         @PathVariable("id") long id,
                                         Model model, HttpSession session) {
+        System.out.println("Запрос получен! ID: " + id + ", сообщение: " + message);
         Conversation newConversation = new Conversation();
-        newConversation.setMessage(userService.getInMemoryUser().getId() + message + '\n');
+        newConversation.setMessage(userService.getInMemoryUser().getId() + " " + message + '\n');
         Conversation conversation = userService.FindAllConversations().stream()
                 .filter(conv -> conv.getId() == id).findFirst().orElse(null);
         if (conversation == null) {
@@ -679,11 +689,14 @@ public class UserController {
         Message tempMessages = new Message();
         boolean check = false;
         String temp = "";
+        Map<Long, String> userNames = new HashMap<>();
         for (char m : conversation.getMessage().toCharArray()) {
             if (!check && m == ' ') {
                 tempMessages = new Message();
                 tempMessages.setSecondID(0);
                 tempMessages.setFirstID(Integer.parseInt(temp));
+                User user = userService.FindUserById(tempMessages.getFirstID());
+                userNames.put(tempMessages.getFirstID(), user.getName() + " " + user.getLastName());
                 temp = "";
                 check = true;
                 continue;
@@ -704,6 +717,7 @@ public class UserController {
         model.addAttribute("conversation", conversation);
         model.addAttribute("tailOfMessage", tailOfMessage);
         model.addAttribute("allow", false);
+        model.addAttribute("userNames", userNames);
         return "PageOfUser";
     }
 
@@ -723,11 +737,14 @@ public class UserController {
                 Message tempMessages = new Message();
                 boolean check = false;
                 String temp = "";
+                Map<Long, String> userNames = new HashMap<>();
                 for (char m : conversation.getMessage().toCharArray()) {
                     if (!check && m == ' ') {
                         tempMessages = new Message();
                         tempMessages.setSecondID(0);
                         tempMessages.setFirstID(Integer.parseInt(temp));
+                        User user = userService.FindUserById(tempMessages.getFirstID());
+                        userNames.put(tempMessages.getFirstID(), user.getName() + " " + user.getLastName());
                         temp = "";
                         check = true;
                         continue;
@@ -748,6 +765,7 @@ public class UserController {
                 model.addAttribute("conversation", conversation);
                 model.addAttribute("tailOfMessage", tailOfMessage);
                 model.addAttribute("allow", false);
+                model.addAttribute("userNames", userNames);
                 return "PageOfUser";
             }
         }

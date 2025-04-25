@@ -29,7 +29,7 @@
                     <ul th:if="${#lists.size(tailOfMessage) > 0}">
                         <li th:each="t : ${tailOfMessage}">
                             <div th:id="tailOfMessage" th:if="${t.getMessage().length() > 0 and t.getFirstID() != user.getId()}">
-                                <span th:text="${t.getMessage()}"></span>
+                                <span th:text="'(' + ${userNames[t.getFirstID()]} + ') ' + ${t.getMessage()}"></span>
                             </div>
                             <div th:id="tailOfMessageOwner" th:if="${t.getMessage().length() > 0 and t.getFirstID() == user.getId()}">
                                 <span th:text="${t.getMessage()}"></span>
@@ -42,7 +42,9 @@
                     <input th:id="message" type="text" name="message" required>
                     <button th:id="sendMessage" type="submit">Отправить</button>
                 </form>
-                <form th:action="@{/api/v1/conversion/{id}(id=${conversation.getId()})/sendMessage}" method="post" th:if="${userClick == null}">
+                <form th:action="@{/api/v1/conversation/{id}/sendMessage(id=${conversation.getId()})}"
+                      method="post"
+                      th:if="${userClick == null}">
                     <input th:id="message" type="text" name="message" required>
                     <button th:id="sendMessage" type="submit">Отправить</button>
                 </form>
