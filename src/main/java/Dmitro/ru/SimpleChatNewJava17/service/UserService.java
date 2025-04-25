@@ -28,6 +28,10 @@ public interface UserService {
     void setInMemoryUser(User user);
     Conversation FindConversationById(String name);
     Conversation setNewConversation(Conversation newConversation);
+    List<Conversation> FindAllConversations();
+    void deleteConversationById(long id);
+    Conversation UpdateConversation(Conversation newConversation);
     MidConversation FindMidConversationById(String nameOfConversation, long idOfUser);
     MidConversation setNewMidConversation(MidConversation newConversation);
+    List<MidConversation> FindAllMidConversations();
 }

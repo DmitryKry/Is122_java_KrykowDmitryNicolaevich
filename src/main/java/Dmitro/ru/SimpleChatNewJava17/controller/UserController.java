@@ -2,6 +2,7 @@ package Dmitro.ru.SimpleChatNewJava17.controller;
 
 import Dmitro.ru.SimpleChatNewJava17.model.Conversation;
 import Dmitro.ru.SimpleChatNewJava17.model.Message;
+import Dmitro.ru.SimpleChatNewJava17.model.MidConversation;
 import Dmitro.ru.SimpleChatNewJava17.model.User;
 import Dmitro.ru.SimpleChatNewJava17.service.UserService;
 import Dmitro.ru.SimpleChatNewJava17.service.impl.UserServiceImpl;
@@ -246,6 +247,8 @@ public class UserController {
         Message tempMessages = new Message();
         boolean check = false;
         String temp = "";
+        String forChooseConvertionOrMessageOfUser = ""; // в этой переменной будет храниться тело личных сообщений, либо бесед
+
         for (char m : messagesOfUser.getMessage().toCharArray()) {
             if (!check && m == ' ') {
                 tempMessages = new Message();
@@ -355,6 +358,11 @@ public class UserController {
         return "PageOfUser";
     }
 
+    // В этот метод я вынесу часть логики метода ShapeForm для будущей обработки бесед, что довольно опасно
+    private void processingOfMessages(HttpSession session) {
+
+    }
+
     // Я уже начинаю теряться, это маппер для принятия и ввода сообщений
     @PostMapping("/users/message")
     public String InputMessages(@RequestParam("message") String message, Model model, HttpSession session) {
@@ -460,45 +468,52 @@ public class UserController {
         }
     }
 
-    // выводит список с пользователями, с которыми есть переписка
+    // выводит список с пользователями, с которыми есть переписка, а также может выводить список бесед
     @GetMapping("/historyOfMessages")
     public String historyOfMessages(@RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "1") int size,
+                                    @RequestParam(defaultValue = "false") boolean openConversation,
                                     Model model, HttpSession session) {
         if (userService.getInMemoryUser() == null) {
             return "users";
         }
-        List<Message> allMessage = userService.getAllOfMessage();
-        List<Message> messagesOfUser = allMessage.stream().
-                filter(message -> message.getFirstID() == userService.getInMemoryUser().getId()
-                || message.getSecondID() == userService.getInMemoryUser().getId()).toList();
-        List<User> allUsers = userService.FindAllUsers();
-        List<User> findOfUsersForDialog = allUsers.stream().
-                filter(user -> messagesOfUser.stream()
-                        .anyMatch(message ->
-                                message.getFirstID() == user.getId() || message.getSecondID() == user.getId())).
-                toList();
-        // список который захватывает только сообщения с конкрентным пользователем
-        List<User> findOfUsersForDialogMore = findOfUsersForDialog.stream().
-                filter(user -> user.getId() != userService.getInMemoryUser().getId()).
-                toList();
-        // Добавляю дополнительный список для пагинации
-        List<User> users = new ArrayList<>();
-        for (int i = 0; i < 12; i++){
-            if ((i + page) < findOfUsersForDialogMore.size())
-                users.add(findOfUsersForDialogMore.get(i + page));
+        if (!openConversation) {
+            List<Message> allMessage = userService.getAllOfMessage();
+            List<Message> messagesOfUser = allMessage.stream().
+                    filter(message -> message.getFirstID() == userService.getInMemoryUser().getId()
+                    || message.getSecondID() == userService.getInMemoryUser().getId()).toList();
+            List<User> allUsers = userService.FindAllUsers();
+            List<User> findOfUsersForDialog = allUsers.stream().
+                    filter(user -> messagesOfUser.stream()
+                            .anyMatch(message ->
+                                    message.getFirstID() == user.getId() || message.getSecondID() == user.getId())).
+                    toList();
+            // список который захватывает только сообщения с конкрентным пользователем
+            List<User> findOfUsersForDialogMore = findOfUsersForDialog.stream().
+                    filter(user -> user.getId() != userService.getInMemoryUser().getId()).
+                    toList();
+            // Добавляю дополнительный список для пагинации
+            List<User> users = new ArrayList<>();
+            for (int i = 0; i < 12; i++){
+                if ((i + page) < findOfUsersForDialogMore.size())
+                    users.add(findOfUsersForDialogMore.get(i + page));
+            }
+            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("users", users);
+            session.setAttribute("usersOfHistory", users);
+            model.addAttribute("userCount", findOfUsersForDialogMore.size());
+            session.setAttribute("userCountMore", findOfUsersForDialog.size());
+            model.addAttribute("currentPage", page);
+            session.setAttribute("currentPage", page);
+            model.addAttribute("totalPages", findOfUsersForDialogMore.size());
+            session.setAttribute("totalPages", findOfUsersForDialogMore.size());
+            model.addAttribute("createOfConversion", false);
+            model.addAttribute("openConversation", false);
+            return "historyOfMessages";
         }
-        model.addAttribute("user", userService.getInMemoryUser());
-        model.addAttribute("users", users);
-        session.setAttribute("usersOfHistory", users);
-        model.addAttribute("userCount", findOfUsersForDialogMore.size());
-        session.setAttribute("userCountMore", findOfUsersForDialog.size());
-        model.addAttribute("currentPage", page);
-        session.setAttribute("currentPage", page);
-        model.addAttribute("totalPages", findOfUsersForDialogMore.size());
-        session.setAttribute("totalPages", findOfUsersForDialogMore.size());
-        model.addAttribute("createOfConversion", false);
-        return "historyOfMessages";
+        else {
+            return "historyOfMessages";
+        }
     }
 
     // метод, который может обновлять данные пользователя
@@ -618,6 +633,13 @@ public class UserController {
         conversation.setIDOwner(userService.getInMemoryUser().getId());
         conversation.setAdminIsOwner(AdminIsOwner);
         userService.setNewConversation(conversation);
+        conversation = userService.FindAllConversations().stream()
+                .filter(conversation1 -> conversation1.getNameOfConversation().equals(nameOfConversion))
+                .findFirst().orElse(null);
+        MidConversation midConversation = new MidConversation();
+        midConversation.setIdOfConversation(conversation.getId());
+        midConversation.setIdOfUser(userService.getInMemoryUser().getId());
+        userService.setNewMidConversation(midConversation);
         model.addAttribute("createOfConversion", false);
         model.addAttribute("user", userService.getInMemoryUser());
         model.addAttribute("users", session.getAttribute("usersOfHistory"));
@@ -626,4 +648,36 @@ public class UserController {
         model.addAttribute("totalPages", session.getAttribute("totalPages"));
         return "historyOfMessages";
     }
+
+    // сообщения беседы, будут дублированы на примере ShapeFormForId
+    @GetMapping("/conversion/{id}")
+    public String conversion(@PathVariable long id, Model model) {
+        Conversation conversation = userService.FindAllConversations().stream()
+                .filter(conv -> conv.getId() == id).findFirst().orElse(null);
+        if (conversation == null) {
+            MidConversation midConversation = userService.FindAllMidConversations().stream()
+                    .filter(midConv -> midConv.getIdOfConversation() == id
+                            && midConv.getIdOfUser() == userService.getInMemoryUser().getId())
+                    .findFirst().orElse(null);
+            if (midConversation == null) {
+
+            }
+        }
+
+        return "PageOfUser";
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -104,6 +104,21 @@ public class MemoryUserServiceImpl implements UserService {
     }
 
     @Override
+    public List<Conversation> FindAllConversations() {
+        return List.of();
+    }
+
+    @Override
+    public void deleteConversationById(long id) {
+
+    }
+
+    @Override
+    public Conversation UpdateConversation(Conversation newConversation) {
+        return null;
+    }
+
+    @Override
     public MidConversation FindMidConversationById(String nameOfConversation, long idOfUser) {
         return null;
     }
@@ -111,5 +126,10 @@ public class MemoryUserServiceImpl implements UserService {
     @Override
     public MidConversation setNewMidConversation(MidConversation newConversation) {
         return null;
+    }
+
+    @Override
+    public List<MidConversation> FindAllMidConversations() {
+        return List.of();
     }
 }

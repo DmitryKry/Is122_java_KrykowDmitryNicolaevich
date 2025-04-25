@@ -11,7 +11,7 @@ a{
 
 #Menu{
     width: 100%;
-    border: 1px solid black;
+    border-bottom: 1px solid black;
     height: 50px;
     position: fixed; /* Лучше fixed для меню */
     top: 0.1%; /* Фиксируем вверху */
@@ -401,7 +401,7 @@ a{
     transition: 0.5s;
 }
 
-#GeneralInfo #createOfConversionButton, #Cancel {
+#GeneralInfo .createOfConversionButton, #Cancel {
     position: relative;
     display: inline-block;
     border: white solid 1px;
@@ -409,9 +409,11 @@ a{
     border-radius: 25% / 100%;
     color: white;
     background-color: #07f;
+    min-width: 30px;
+    margin: 0% 1%;
 }
 
-#GeneralInfo #createOfConversionButton:hover, #Cancel:hover {
+#GeneralInfo .createOfConversionButton:hover, #Cancel:hover {
     color: white;
     background-color: #248aff;
 }

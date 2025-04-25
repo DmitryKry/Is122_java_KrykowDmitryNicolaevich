@@ -146,6 +146,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<Conversation> FindAllConversations() {
+        return conversationRepository.findAll();
+    }
+
+    @Override
+    public void deleteConversationById(long id) {
+        Conversation conversation = conversationRepository.findAll().stream()
+                .filter(conv -> conv.getId() == id).findFirst().orElse(null);
+        if (conversation != null) {
+            conversationRepository.delete(conversation);
+        }
+    }
+
+    @Override
+    public Conversation UpdateConversation(Conversation newConversation) {
+        Conversation conversation = conversationRepository.findAll().stream()
+                .filter(conv -> conv.getNameOfConversation().equals(newConversation.getNameOfConversation()))
+                .findFirst().orElse(null);
+        if (conversation != null) {
+            conversation.setMessage(conversation.getMessage() + newConversation.getMessage());
+            return conversationRepository.save(conversation);
+        }
+        return null;
+    }
+
+    @Override
     public MidConversation FindMidConversationById(String nameOfConversation, long idOfUser) {
         Conversation temp = conversationRepository.findAll().stream()
                 .filter(conv -> conv.getNameOfConversation().equals(nameOfConversation))
@@ -170,5 +196,10 @@ public class UserServiceImpl implements UserService {
     public MidConversation setNewMidConversation(MidConversation newConversation) {
         midConversationRepository.save(newConversation);
         return newConversation;
+    }
+
+    @Override
+    public List<MidConversation> FindAllMidConversations() {
+        return midConversationRepository.findAll();
     }
 }
