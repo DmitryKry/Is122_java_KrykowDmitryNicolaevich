@@ -86,7 +86,7 @@ a{
     border-radius: 2% / 2%;
 }
 
-#GeneralInfo #deleteMessageClick{
+#GeneralInfo .deleteMessageClick{
     display: inline-block;
     position: absolute;
     right: 3%;
@@ -99,7 +99,7 @@ a{
     transition: 0.5s;
 }
 
-#GeneralInfo #deleteMessageClick:hover{
+#GeneralInfo .deleteMessageClick:hover{
     color: red;
     background-color: black;
     box-shadow: 0px 0px 10px black;
@@ -252,7 +252,7 @@ a{
     padding-left: 0px;
 }
 
-#GeneralInfo #MessageForm #tailOfMessage{
+#GeneralInfo #MessageForm .tailOfMessage{
     border: white solid 1px;
     display: block;
     margin-left: 1%;

@@ -688,6 +688,7 @@ public class UserController {
         return "historyOfMessages";
     }
 
+    // Метод для отправки сообщения в беседу
     @PostMapping("/conversation/{id}/sendMessage")
     public String conversionSendMessage(@RequestParam("message") String message,
                                         @PathVariable("id") long id,
@@ -750,14 +751,18 @@ public class UserController {
     @GetMapping("/conversation/{id}")
     public String conversion(@PathVariable long id, @RequestParam(defaultValue = "false") boolean allow,
                              Model model, HttpSession session) {
+        // ищу, есть ли эта беседа вообще
         Conversation conversation = userService.FindAllConversations().stream()
                 .filter(conv -> conv.getId() == id).findFirst().orElse(null);
-        if (conversation != null) {
+        // подтверждаю наличие пользователя в этой беседе
+        if (conversation != null)
+        {
             MidConversation midConversation = userService.FindAllMidConversations().stream()
                     .filter(midConv -> midConv.getIdOfConversation() == id
                             && midConv.getIdOfUser() == userService.getInMemoryUser().getId())
                     .findFirst().orElse(null);
-            if (midConversation != null) {
+            if (midConversation != null)
+            {
                 List<Message> tailOfMessage = new ArrayList<>();
                 Message tempMessages = new Message();
                 boolean check = false;
@@ -779,33 +784,13 @@ public class UserController {
                         tailOfMessage.add(tempMessages);
                         temp = "";
                         check = false;
-                    }
-                    else {
+                    } else {
                         temp += m;
                     }
                 }
-
-                model.addAttribute("user", userService.getInMemoryUser());
-                model.addAttribute("userClick", null);
-                model.addAttribute("conversation", conversation);
-                model.addAttribute("tailOfMessage", tailOfMessage);
-                model.addAttribute("allow", false);
-                model.addAttribute("userNames", userNames);
-                return "PageOfUser";
-            }
-        }
-        model.addAttribute("createOfConversion", false);
-        model.addAttribute("user", userService.getInMemoryUser());
-        model.addAttribute("users", session.getAttribute("usersOfHistory"));
-        model.addAttribute("userCount", session.getAttribute("userCountMore"));
-        model.addAttribute("currentPage", session.getAttribute("currentPage"));
-        model.addAttribute("totalPages", session.getAttribute("totalPages"));
-        return "historyOfMessages";
-    }
-    // переписываю список, убирая сообщения пользователя, удаляя целый блок сообщения и создавая новый
-                /*
                 if (allow) {
                     tailOfMessage.clear();
+                    userNames.clear();
                     temp = "";
                     for (char m : conversation.getMessage().toCharArray()) {
                         if (!check && m == ' ') {
@@ -819,32 +804,89 @@ public class UserController {
                             tailOfMessage.add(tempMessages);
                             temp = "";
                             check = false;
-                        }
-                        else {
+                        } else {
                             temp += m;
                         }
                     }
                     for (int i = tailOfMessage.size() - 1; i >= 0; i--) {
-                        if (tailOfMessage.get(i).getFirstID() == userService.getInMemoryUser().getId()){
+                        if (tailOfMessage.get(i).getFirstID() == userService.getInMemoryUser().getId()) {
                             tailOfMessage.remove(i);
                             break;
                         }
                     }
+                    Conversation tempConversation = new Conversation();
+                    tempConversation.setNameOfConversation(conversation.getNameOfConversation());
+                    tempConversation.setAdminIsOwner(conversation.isAdminIsOwner());
+                    tempConversation.setIDOwner(conversation.getIDOwner());
                     userService.deleteConversationById(conversation.getId());
-                    Message newMessage = new Message();
-                    newMessage.setFirstID(userService.getInMemoryUser().getId());
+                    // удаляю промежуточные списки
+                    List<MidConversation> tempMidConversation = userService.FindAllMidConversations().stream()
+                            .filter(midconv -> midconv.getIdOfConversation() == id)
+                            .toList();
+                    for (MidConversation element : tempMidConversation){
+                        userService.deleteMidConversationById(element.getId());
+                    }
                     String tempNewMessage = "";
                     // Формирую новое сообщение без удалённых блоков сообщений
                     for (int i = 0; i < tailOfMessage.size(); i++) {
                         tempNewMessage += tailOfMessage.get(i).getMessage();
                     }
-                    if (!tempNewMessage.equals("")) {
-                        newMessage.setMessage(tempNewMessage);
-                        userService.AddMessage(newMessage);
-                    }
+                    tempConversation.setMessage(tempNewMessage);
+                    userService.setNewConversation(tempConversation);
                     tailOfMessage.clear();
                     temp = "";
-                 */
+                    conversation = userService.FindAllConversations().stream()
+                            .filter(conv -> conv.getNameOfConversation().equals(tempConversation.getNameOfConversation())
+                            && conv.getIDOwner() == tempConversation.getIDOwner())
+                            .findFirst().orElse(null);
+                    // Присваиваю новый id беседы и сохраняю промежуточные списки
+                    for (MidConversation element : tempMidConversation) {
+                        MidConversation tempMidConversation2 = new MidConversation();
+                        tempMidConversation2.setIdOfUser(element.getIdOfUser());
+                        tempMidConversation2.setIdOfConversation(conversation.getId());
+                        userService.setNewMidConversation(tempMidConversation2);
+                    }
+                    userNames = new HashMap<>();
+                    for (char m : conversation.getMessage().toCharArray()) {
+                        if (!check && m == ' ') {
+                            tempMessages = new Message();
+                            tempMessages.setSecondID(0);
+                            tempMessages.setFirstID(Integer.parseInt(temp));
+                            User user = userService.FindUserById(tempMessages.getFirstID());
+                            userNames.put(tempMessages.getFirstID(), user.getName() + " " + user.getLastName());
+                            temp = "";
+                            check = true;
+                            continue;
+                        }
+                        if (m == '\n' && check) {
+                            tempMessages.setMessage(temp);
+                            tailOfMessage.add(tempMessages);
+                            temp = "";
+                            check = false;
+                        } else {
+                            temp += m;
+                        }
+                    }
+                }
+                model.addAttribute("user", userService.getInMemoryUser());
+                model.addAttribute("userClick", null);
+                model.addAttribute("conversation", conversation);
+                model.addAttribute("conversationClick", id);
+                model.addAttribute("tailOfMessage", tailOfMessage);
+                model.addAttribute("allow", false);
+                model.addAttribute("userNames", userNames);
+                return "PageOfUser";
+            }
+        }
+                    // переписываю список, убирая сообщения пользователя, удаляя целый блок сообщения и создавая новый
+            model.addAttribute("createOfConversion", false);
+            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("users", session.getAttribute("usersOfHistory"));
+            model.addAttribute("userCount", session.getAttribute("userCountMore"));
+            model.addAttribute("currentPage", session.getAttribute("currentPage"));
+            model.addAttribute("totalPages", session.getAttribute("totalPages"));
+            return "historyOfMessages";
+    }
 }
 
 

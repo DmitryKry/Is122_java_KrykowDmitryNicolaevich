@@ -132,4 +132,9 @@ public class MemoryUserServiceImpl implements UserService {
     public List<MidConversation> FindAllMidConversations() {
         return List.of();
     }
+
+    @Override
+    public void deleteMidConversationById(long id) {
+
+    }
 }

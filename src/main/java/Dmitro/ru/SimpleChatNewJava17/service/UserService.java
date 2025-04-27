@@ -34,4 +34,5 @@ public interface UserService {
     MidConversation FindMidConversationById(String nameOfConversation, long idOfUser);
     MidConversation setNewMidConversation(MidConversation newConversation);
     List<MidConversation> FindAllMidConversations();
+    void deleteMidConversationById(long id);
 }

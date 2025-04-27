@@ -22,13 +22,20 @@
                 </div>
             </div>
             <div th:id="GeneralInfo">
-                <h1 th:text="${userClick != null} ? ${userClick.getName()} + ' '+ ${userClick.getLastName()} : ${conversation.getNameOfConversation()}"></h1>
-                <a th:href="@{/api/v1/users/{id}(id=${userClick.getId()}, allow=true)}" id="deleteMessageClick" th:if="${userClick != null}">
-                    Удалить сообщение</a>
+                <h1 th:text="${userClick != null} ? ${userClick.getName()} + ' '
+                + ${userClick.getLastName()} : ${conversation.getNameOfConversation()}"></h1>
+                <a th:href="@{/api/v1/users/{id}(id=${userClick.getId()}, allow=true)}" class="deleteMessageClick"
+                   th:if="${userClick != null}">Удалить сообщение</a>
+                <a th:href="@{/api/v1/conversation/{id}(id=${conversation.getId()}, allow=true)}" class="deleteMessageClick"
+                   th:if="${userClick == null}">Удалить сообщение</a>
                 <div id="MessageForm">
                     <ul th:if="${#lists.size(tailOfMessage) > 0}">
                         <li th:each="t : ${tailOfMessage}">
-                            <div th:id="tailOfMessage" th:if="${t.getMessage().length() > 0 and t.getFirstID() != user.getId()}">
+                            <div th:class="tailOfMessage" th:if="${t.getMessage().length() > 0 and t.getFirstID() != user.getId()}">
+                                <span th:text="${t.getMessage()}"></span>
+                            </div>
+                            <div th:class="tailOfMessage" th:if="${t.getMessage().length() > 0 and t.getFirstID() != user.getId()
+                            and userClick == null}">
                                 <span th:text="'(' + ${userNames[t.getFirstID()]} + ') ' + ${t.getMessage()}"></span>
                             </div>
                             <div th:id="tailOfMessageOwner" th:if="${t.getMessage().length() > 0 and t.getFirstID() == user.getId()}">

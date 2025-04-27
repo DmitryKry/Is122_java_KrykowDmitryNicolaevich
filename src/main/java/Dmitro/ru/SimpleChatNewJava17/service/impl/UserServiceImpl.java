@@ -203,4 +203,13 @@ public class UserServiceImpl implements UserService {
     public List<MidConversation> FindAllMidConversations() {
         return midConversationRepository.findAll();
     }
+
+    @Override
+    public void deleteMidConversationById(long id) {
+        MidConversation deteleMidConv = midConversationRepository.findAll().stream()
+                .filter(midConv -> midConv.getId() == id).findFirst().orElse(null);
+        if (deteleMidConv != null) {
+            midConversationRepository.delete(deteleMidConv);
+        }
+    }
 }
