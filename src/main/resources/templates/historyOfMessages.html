@@ -30,7 +30,7 @@
                     Создать беседу</a>
                 <a th:href="@{/api/v1/historyOfMessages(openConversation=${true})}" th:class="createOfConversionButton">
                     Беседы</a>
-                <ul th:if="${users != null}">
+                <ul th:if="${users != null && openConversation == false}">
                     <li th:each="u : ${users}">
                         <div th:id="Transfer">
                             <a th:href="@{/api/v1/users/{id}(id=${u.id})}">
@@ -38,6 +38,15 @@
                                 (<span th:text="${u.email}"></span>)
                                 <span th:text="'возраст - ' + ${u.getAge()}"></span>
                                 <span th:text="${u.gender.equals('male')} ? 'M' : 'Ж'"></span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+                <ul th:if="${users != null && openConversation == true}">
+                    <li th:each="u : ${users}">
+                        <div th:id="Transfer">
+                            <a th:href="@{/api/v1/conversation/{id}(id=${u.getId()})}">
+                                <span th:text="${u.getNameOfConversation()}"></span>
                             </a>
                         </div>
                     </li>

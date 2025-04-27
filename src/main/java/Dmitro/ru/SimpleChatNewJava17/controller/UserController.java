@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Controller
 @RequestMapping("/api/v1")
@@ -525,6 +526,29 @@ public class UserController {
             return "historyOfMessages";
         }
         else {
+            List<MidConversation> midUser = userService.FindAllMidConversations().stream()
+                    .filter(midCon -> midCon.getIdOfUser() == userService.getInMemoryUser().getId())
+                    .toList();
+            List<Conversation> convUser = userService.FindAllConversations().stream()
+                    .filter(conv -> midUser.stream()
+                            .anyMatch(midCon -> midCon.getIdOfConversation() == conv.getId()))
+                    .toList();
+            List<Conversation> users = new ArrayList<>();
+            for (int i = 0; i < 12; i++){
+                if ((i + page) < convUser.size())
+                    users.add(convUser.get(i + page));
+            }
+            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("users", users);
+            session.setAttribute("usersOfHistory", users);
+            model.addAttribute("userCount", convUser.size());
+            session.setAttribute("userCountMore", convUser.size());
+            model.addAttribute("currentPage", page);
+            session.setAttribute("currentPage", page);
+            model.addAttribute("totalPages", convUser.size());
+            session.setAttribute("totalPages", convUser.size());
+            model.addAttribute("createOfConversion", false);
+            model.addAttribute("openConversation", true);
             return "historyOfMessages";
         }
     }
@@ -648,7 +672,8 @@ public class UserController {
         conversation.setMessage("");
         userService.setNewConversation(conversation);
         conversation = userService.FindAllConversations().stream()
-                .filter(conversation1 -> conversation1.getNameOfConversation().equals(nameOfConversion))
+                .filter(conv -> conv.getNameOfConversation().equals(nameOfConversion)
+                && conv.getIDOwner() == userService.getInMemoryUser().getId())
                 .findFirst().orElse(null);
         MidConversation midConversation = new MidConversation();
         midConversation.setIdOfConversation(conversation.getId());

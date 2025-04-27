@@ -193,9 +193,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public MidConversation setNewMidConversation(MidConversation newConversation) {
-        midConversationRepository.save(newConversation);
-        return newConversation;
+    @Transactional
+    public MidConversation setNewMidConversation(MidConversation newMidConversation) {
+        midConversationRepository.save(newMidConversation);
+        return newMidConversation;
     }
 
     @Override

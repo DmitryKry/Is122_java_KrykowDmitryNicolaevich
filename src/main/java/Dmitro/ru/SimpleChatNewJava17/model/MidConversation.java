@@ -5,11 +5,11 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "midConversations")
+@Table(name = "midconversations")
 public class MidConversation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long ID;
+    private long id;
     private long IdOfUser;
     private long IdOfConversation;
 }
