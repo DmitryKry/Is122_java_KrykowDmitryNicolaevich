@@ -26,6 +26,12 @@ public class UserServiceImpl implements UserService {
     private final MessageRepository messageRepository;
     private final ConversationRepository conversationRepository;
     private final MidConversationRepository midConversationRepository;
+
+    @Override
+    public List<User> getListUsersForAddConversation() {
+        return userDAO.addUserForConversation;
+    }
+
     @Override
     public List<User> FindAllUsers() {
         return userRepository.findAll();

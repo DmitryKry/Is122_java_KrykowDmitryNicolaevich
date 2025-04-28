@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface UserService {
+    List<User> getListUsersForAddConversation();
     List<User> FindAllUsers();
     User FindUserById(long id);
     User FindUserByEmail(String email);

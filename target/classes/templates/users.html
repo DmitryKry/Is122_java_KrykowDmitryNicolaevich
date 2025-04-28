@@ -38,11 +38,17 @@
                 <ul>
                     <li th:each="u : ${users}">
                         <div th:id="Transfer">
-                            <a th:href="@{/api/v1/users/{id}(id=${u.id})}">
+                            <a th:href="@{/api/v1/users/{id}(id=${u.id})}" th:if="${sort == false}">
                                 <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
-                                 (<span th:text="${u.email}"></span>)
+                                (<span th:text="${u.email}"></span>)
                                 <span th:text="'возраст - ' + ${u.getAge()}"></span>
                                 <span th:text="${u.gender.equals('male')} ? 'M' : 'Ж'"></span>
+                            </a>
+
+                            <!-- Показываем пользователей при sort == false -->
+                            <a th:href="@{/api/v1/users/{id}(id=${u.id})}" th:if="${sort == true}">
+                                <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
+                                (<span th:text="${u.email}"></span>)
                             </a>
                         </div>
                     </li>

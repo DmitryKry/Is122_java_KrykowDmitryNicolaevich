@@ -18,6 +18,12 @@ import java.util.List;
 @AllArgsConstructor
 public class MemoryUserServiceImpl implements UserService {
     private final InMemoryUserDAO userDAO;
+
+    @Override
+    public List<User> getListUsersForAddConversation() {
+        return List.of();
+    }
+
     @Override
     public List<User> FindAllUsers() {
         return userDAO.FindAllUsers();

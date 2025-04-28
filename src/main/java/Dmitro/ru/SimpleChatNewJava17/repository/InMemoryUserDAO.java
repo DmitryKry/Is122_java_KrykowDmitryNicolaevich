@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 @Repository
 public class InMemoryUserDAO {
     private final List<User> users = new ArrayList<>();
+    public List<User> addUserForConversation = new ArrayList<>(); // список пользователей для добавления в беседу
     static private User user;
     public void SetInMemoryUserDAO(User user) {
         InMemoryUserDAO.user = user;

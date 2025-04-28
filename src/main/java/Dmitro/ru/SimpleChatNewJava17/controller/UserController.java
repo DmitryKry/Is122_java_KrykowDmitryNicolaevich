@@ -30,6 +30,7 @@ public class UserController {
     @GetMapping("/users")
     public String FindAllUsers(@RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "1") int size,
+                               @RequestParam(defaultValue = "false") boolean sort,
                                Model model,
                                HttpSession session) {
         List<User> users = new ArrayList<>();
@@ -56,6 +57,7 @@ public class UserController {
             else model.addAttribute("allUsers", findAllUsers);
             model.addAttribute("users", users);  // Содержимое текущей страницы
             model.addAttribute("currentPage", page);
+            model.addAttribute("sort", sort);
             if (session.getAttribute("users") == null)
                 model.addAttribute("totalPages", usersPage.getTotalPages());
             else
@@ -744,10 +746,11 @@ public class UserController {
         model.addAttribute("tailOfMessage", tailOfMessage);
         model.addAttribute("allow", false);
         model.addAttribute("userNames", userNames);
+        model.addAttribute("addUsers", false);
         return "PageOfUser";
     }
 
-    // сообщения беседы, будут дублированы на примере ShapeFormForId
+    // сообщения беседы, будут дублированы на примере ShapeFormForId +++
     @GetMapping("/conversation/{id}")
     public String conversion(@PathVariable long id, @RequestParam(defaultValue = "false") boolean allow,
                              Model model, HttpSession session) {
@@ -875,10 +878,14 @@ public class UserController {
                 model.addAttribute("tailOfMessage", tailOfMessage);
                 model.addAttribute("allow", false);
                 model.addAttribute("userNames", userNames);
+                model.addAttribute("addUsers", false);
+
+                session.setAttribute("conversation", conversation);
+                session.setAttribute("tailOfMessage", tailOfMessage);
+                session.setAttribute("userNames", userNames);
                 return "PageOfUser";
             }
         }
-                    // переписываю список, убирая сообщения пользователя, удаляя целый блок сообщения и создавая новый
             model.addAttribute("createOfConversion", false);
             model.addAttribute("user", userService.getInMemoryUser());
             model.addAttribute("users", session.getAttribute("usersOfHistory"));
@@ -886,6 +893,27 @@ public class UserController {
             model.addAttribute("currentPage", session.getAttribute("currentPage"));
             model.addAttribute("totalPages", session.getAttribute("totalPages"));
             return "historyOfMessages";
+    }
+
+    // Метод, который будет демонстрировать список собеседников и представит возможность добавления новых пользователей
+    @GetMapping("/conversation/{id}/ListOfUsers")
+    public String getListOfUsers(@PathVariable long id, Model model, HttpSession session) {
+        List<User> users = userService.FindAllUsers().stream()
+                .filter(user -> userService.FindAllMidConversations().stream()
+                        .anyMatch(midConv -> midConv.getIdOfUser() == user.getId() &&
+                                midConv.getIdOfConversation() ==
+                                        ((Conversation) session.getAttribute("conversation")).getId()))
+                .toList();
+        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("users", users);
+        model.addAttribute("userClick", null);
+        model.addAttribute("conversation", session.getAttribute("conversation"));
+        model.addAttribute("conversationClick", id);
+        model.addAttribute("tailOfMessage", session.getAttribute("tailOfMessage"));
+        model.addAttribute("allow", false);
+        model.addAttribute("userNames", session.getAttribute("userNames"));
+        model.addAttribute("addUsers", true);
+        return "PageOfUser";
     }
 }
 

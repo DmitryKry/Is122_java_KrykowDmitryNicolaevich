@@ -99,7 +99,21 @@ a{
     transition: 0.5s;
 }
 
-#GeneralInfo .deleteMessageClick:hover{
+#GeneralInfo #usersAddform{
+    display: inline-block;
+    position: absolute;
+    right: 23%;
+    top: 3%;
+    color: white;
+    background-color: #07f;
+    border: white solid 1px;
+    padding: 1%;
+    border-radius: 20% / 100%;
+    transition: 0.5s;
+}
+
+#GeneralInfo .deleteMessageClick:hover,
+#GeneralInfo #usersAddform:hover {
     color: red;
     background-color: black;
     box-shadow: 0px 0px 10px black;
@@ -434,6 +448,27 @@ a{
 #GeneralInfo .form-group > select {
     padding: 10px;
     border-radius: 15% / 100%;
+}
+
+#GeneralInfo #formForAddUsers{
+    position: fixed;
+    width: min(25%);
+    height: auto;
+    padding: 1% 0%;
+    top: 15%;
+    left: 38%;
+    background-color: white;
+    border: black solid 1px;
+    border-radius: 3% / 3%; /* Динамическая высота */
+    max-height: 35%; /* Ограничиваем высоту до 80% высоты экрана */
+    overflow-y: auto;
+}
+
+#GeneralInfo #formForAddUsers #cancelAddOfUsers {
+    position: relative; /* Фиксируем элемент относительно родительского контейнера */
+    margin-top: 1%;/* Приклеиваем к низу */
+    left: 0.5%; /* Центрируем по горизонтали */
+    height: auto;
 }
 
 .form-group{

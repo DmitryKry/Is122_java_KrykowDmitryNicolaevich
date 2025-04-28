@@ -26,6 +26,11 @@
                 + ${userClick.getLastName()} : ${conversation.getNameOfConversation()}"></h1>
                 <a th:href="@{/api/v1/users/{id}(id=${userClick.getId()}, allow=true)}" class="deleteMessageClick"
                    th:if="${userClick != null}">Удалить сообщение</a>
+
+                <a th:href="@{/api/v1/conversation/{id}/ListOfUsers(id=${conversation.getId()}, allow=true)}"
+                   th:id="usersAddform"
+                   th:if="${userClick == null}">Собеседники</a>
+
                 <a th:href="@{/api/v1/conversation/{id}(id=${conversation.getId()}, allow=true)}" class="deleteMessageClick"
                    th:if="${userClick == null}">Удалить сообщение</a>
                 <div id="MessageForm">
@@ -55,6 +60,26 @@
                     <input th:id="message" type="text" name="message" required>
                     <button th:id="sendMessage" type="submit">Отправить</button>
                 </form>
+                <div th:if="${addUsers == true}" th:id="formForAddUsers">
+                    <h2 th:text="'Количество собеседников: ' + ${users != null ? users.size() : 0}"></h2>
+                    <div th:id="listOfUSers">
+                        <ul>
+                            <li th:each="u : ${users}">
+                                <div th:id="Transfer">
+                                    <a th:href="@{/api/v1/users/{id}(id=${u.id})}">
+                                        <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <a th:href="@{/api/v1/conversation/{id}(id=${conversation.getId()}, allow=false)}" class="deleteMessageClick"
+                       th:id="cancelAddOfUsers"
+                       th:if="${userClick == null}">Отменить</a>
+                    <a th:href="@{/api/v1/users(sort=true)}" class="deleteMessageClick"
+                       th:id="cancelAddOfUsers"
+                       th:if="${userClick == null}">Добавить</a>
+                </div>
             </div>
         </div>
         <script>
