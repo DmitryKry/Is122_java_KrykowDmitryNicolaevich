@@ -306,7 +306,7 @@ a{
 
 }
 
-#GeneralInfo #MessageForm #tailOfMessage:hover{
+#GeneralInfo #MessageForm .tailOfMessage:hover{
     background-color: #248aff;
 }
 

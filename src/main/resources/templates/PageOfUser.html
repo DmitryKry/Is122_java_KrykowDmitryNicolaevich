@@ -36,7 +36,8 @@
                 <div id="MessageForm">
                     <ul th:if="${#lists.size(tailOfMessage) > 0}">
                         <li th:each="t : ${tailOfMessage}">
-                            <div th:class="tailOfMessage" th:if="${t.getMessage().length() > 0 and t.getFirstID() != user.getId()}">
+                            <div th:class="tailOfMessage" th:if="${t.getMessage().length() > 0 and t.getFirstID() != user.getId()
+                            and userClick != null}">
                                 <span th:text="${t.getMessage()}"></span>
                             </div>
                             <div th:class="tailOfMessage" th:if="${t.getMessage().length() > 0 and t.getFirstID() != user.getId()

@@ -26,16 +26,37 @@ import java.util.concurrent.ThreadLocalRandom;
 public class UserController {
 
     private final UserService userService;
-    // выводит список пользователей и обрабатывает пагинацию пользователей
+    // выводит список пользователей и обрабатывает пагинацию пользователей, а так же добавляю пользователей в беседу
     @GetMapping("/users")
     public String FindAllUsers(@RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "1") int size,
                                @RequestParam(defaultValue = "false") boolean sort,
+                               @RequestParam(defaultValue = "0") long id,
                                Model model,
                                HttpSession session) {
         List<User> users = new ArrayList<>();
         List<User> findAllUsers = new ArrayList<>();
         Page<User> usersPage = userService.FindAllUsers(page, size);
+        List<User> ListUsersForAddConversation = null;
+        if (sort && id != 0) {
+            User user = userService.FindAllUsers().stream()
+                    .filter(u -> u.getId() == id)
+                    .findFirst().orElse(null);
+            if (user != null) {
+                if (session.getAttribute("ListUsersForAddConversation") == null) {
+                    ListUsersForAddConversation = new ArrayList<>();
+                    ListUsersForAddConversation.add(user);
+                    session.setAttribute("ListUsersForAddConversation", ListUsersForAddConversation);
+                }
+                else {
+                    ListUsersForAddConversation = ((List<User>) session.getAttribute("ListUsersForAddConversation"));
+                    ListUsersForAddConversation.add(user);
+                    session.setAttribute("ListUsersForAddConversation", ListUsersForAddConversation);
+                }
+
+            }
+        }
+
         if (session.getAttribute("users") == null) {
             for (int i = 0; i < 12; i++) {
                 if ((i + page) < userService.FindAllUsers().size())
@@ -58,6 +79,13 @@ public class UserController {
             model.addAttribute("users", users);  // Содержимое текущей страницы
             model.addAttribute("currentPage", page);
             model.addAttribute("sort", sort);
+            if (ListUsersForAddConversation != null)
+                model.addAttribute("ListUsersForAddConversationSize",
+                        ListUsersForAddConversation.size());
+            else model.addAttribute("ListUsersForAddConversationSize", 0);
+            if(session.getAttribute("conversation") != null) {
+                model.addAttribute("conversation", session.getAttribute("conversation"));
+            }
             if (session.getAttribute("users") == null)
                 model.addAttribute("totalPages", usersPage.getTotalPages());
             else
@@ -913,6 +941,35 @@ public class UserController {
         model.addAttribute("allow", false);
         model.addAttribute("userNames", session.getAttribute("userNames"));
         model.addAttribute("addUsers", true);
+        return "PageOfUser";
+    }
+
+    @GetMapping("/conversation/{id}/addUsers")
+    public String getAddUser(@PathVariable long id, Model model, HttpSession session) {
+        List<MidConversation> allMidConv = userService.FindAllMidConversations();
+        List<User> users = ((List<User>) session.getAttribute("ListUsersForAddConversation"));
+        boolean examination = false;
+        for (User element : users){
+            examination = allMidConv.stream().filter(midConv -> midConv.getIdOfUser() == element.getId()
+            && midConv.getIdOfConversation() == ((Conversation) session.getAttribute("conversation")).getId())
+                    .findFirst().isPresent();
+            if (!examination){
+                MidConversation tempMidConversation = new MidConversation();
+                tempMidConversation.setIdOfUser(element.getId());
+                tempMidConversation.setIdOfConversation(id);
+                userService.setNewMidConversation(tempMidConversation);
+            }
+            examination = false;
+        }
+        session.setAttribute("ListUsersForAddConversation", null);
+        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("userClick", null);
+        model.addAttribute("conversation", session.getAttribute("conversation"));
+        model.addAttribute("conversationClick", id);
+        model.addAttribute("tailOfMessage", session.getAttribute("tailOfMessage"));
+        model.addAttribute("allow", false);
+        model.addAttribute("userNames", session.getAttribute("userNames"));
+        model.addAttribute("addUsers", false);
         return "PageOfUser";
     }
 }

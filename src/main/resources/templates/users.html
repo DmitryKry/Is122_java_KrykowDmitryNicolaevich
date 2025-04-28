@@ -24,6 +24,13 @@
             <div th:id="GeneralInfo">
                 <h2 th:id="COUNT"
                     th:text="'Количество пользователей' + ' - ' + (${allUsers != null} ? ${allUsers.size()} : 0)"></h2>
+
+                <a class="deleteMessageClick"
+                   th:href="@{/api/v1/conversation/{id}/addUsers(id=${conversation.getId()})}"
+                   th:text="'Добавить пользователей - ' + ${ListUsersForAddConversationSize}"
+                   th:if="${sort == true}">
+                </a>
+
                 <div th:id="Search">
                     <form th:action="@{/api/v1/findByEmail}" method="post">
                         <label for="email">Email:</label>
@@ -46,7 +53,7 @@
                             </a>
 
                             <!-- Показываем пользователей при sort == false -->
-                            <a th:href="@{/api/v1/users/{id}(id=${u.id})}" th:if="${sort == true}">
+                            <a th:href="@{/api/v1/users(id=${u.id}, sort=true)}" th:if="${sort == true}">
                                 <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
                                 (<span th:text="${u.email}"></span>)
                             </a>
