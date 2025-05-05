@@ -978,6 +978,13 @@ public class UserController {
                                 midConv.getIdOfConversation() ==
                                         ((Conversation) session.getAttribute("conversation")).getId()))
                 .toList();
+        Conversation conversation = ((Conversation) session.getAttribute("conversation"));
+        if (conversation.isAdminIsOwner()){
+            if(userService.getInMemoryUser().getId() == conversation.getIDOwner())
+                model.addAttribute("allowAddOfUsers", true);
+            else model.addAttribute("allowAddOfUsers", false);
+        }
+        else model.addAttribute("allowAddOfUsers", true);
         model.addAttribute("user", userService.getInMemoryUser());
         model.addAttribute("users", users);
         model.addAttribute("userClick", null);

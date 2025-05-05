@@ -79,7 +79,7 @@
                        th:if="${userClick == null}">Отменить</a>
                     <a th:href="@{/api/v1/users(sort=true)}" class="deleteMessageClick"
                        th:id="cancelAddOfUsers"
-                       th:if="${userClick == null}">Добавить</a>
+                       th:if="${userClick == null && allowAddOfUsers == true}">Добавить</a>
                 </div>
             </div>
         </div>
