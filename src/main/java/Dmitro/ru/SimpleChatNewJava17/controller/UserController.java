@@ -38,6 +38,11 @@ public class UserController {
         List<User> findAllUsers = new ArrayList<>();
         Page<User> usersPage = userService.FindAllUsers(page, size);
         List<User> ListUsersForAddConversation = null;
+        if (sort){
+            if (session.getAttribute("ListUsersForAddConversation") != null) {
+                ListUsersForAddConversation = ((List<User>) session.getAttribute("ListUsersForAddConversation"));
+            }
+        }
         if (sort && id != 0) {
             User user = userService.FindAllUsers().stream()
                     .filter(u -> u.getId() == id)
@@ -56,14 +61,18 @@ public class UserController {
 
             }
         }
-
-        if (session.getAttribute("users") == null) {
+        List<User> temp = (List<User>) session.getAttribute("users");
+        if (temp == null) {
             for (int i = 0; i < 12; i++) {
                 if ((i + page) < userService.FindAllUsers().size())
                     users.add(userService.FindAllUsers().get(i + page));
             }
-        }
-        else {
+        } else if (temp.size() == 0) {
+            for (int i = 0; i < 12; i++) {
+                if ((i + page) < userService.FindAllUsers().size())
+                    users.add(userService.FindAllUsers().get(i + page));
+            }
+        } else {
             findAllUsers = (List<User>) session.getAttribute("users");
             for (int i = 0; i < 12; i++) {
                 if ((i + page) < findAllUsers.size())
@@ -90,8 +99,15 @@ public class UserController {
                 model.addAttribute("totalPages", usersPage.getTotalPages());
             else
                 model.addAttribute("totalPages", findAllUsers.size());// Общее количество страниц// Получаем список пользователей из страницы// Общее количество страниц
-        } else {
+        } else if (session.getAttribute("error") != null && users.isEmpty()) {
             model.addAttribute("user", "No users found");
+            model.addAttribute("error", session.getAttribute("error"));
+            model.addAttribute("currentPage", page);
+            model.addAttribute("sort", sort);
+            model.addAttribute("allUsers", 0);
+            model.addAttribute("totalPages", 0);
+            model.addAttribute("ListUsersForAddConversationSize", 0);
+            model.addAttribute("users", null);
         }
         return "users"; // Возвращаем имя шаблона
     }
@@ -172,9 +188,16 @@ public class UserController {
     public String FindUserByEmail(@RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "12") int size,
                                   @RequestParam("email") String email,
+                                  @RequestParam(defaultValue = "false") boolean sort,
                                   Model model,
                                   HttpSession session) {
         try {
+            List<User> ListUsersForAddConversation = null;
+            if (sort){
+                if (session.getAttribute("ListUsersForAddConversation") != null) {
+                    ListUsersForAddConversation = ((List<User>) session.getAttribute("ListUsersForAddConversation"));
+                }
+            }
             Page<User> usersPage = userService.FindAllUsers(page, size);
             if(email.isEmpty()){
                 session.setAttribute("users", null);
@@ -184,6 +207,12 @@ public class UserController {
                 model.addAttribute("currentPage", page);  // Текущая страница
                 model.addAttribute("totalPages", usersPage.getTotalPages());  // Общее количество страниц
                 model.addAttribute("totalItems", usersPage.getTotalElements());
+                model.addAttribute("sort", sort);
+                if(session.getAttribute("conversation") != null)
+                    model.addAttribute("conversation", session.getAttribute("conversation"));
+                if (ListUsersForAddConversation != null)
+                    model.addAttribute("ListUsersForAddConversationSize", ListUsersForAddConversation.size());
+                else model.addAttribute("ListUsersForAddConversationSize", 0);
                 return "users";
             }
             List<User> users = userService.FindAllUsers();
@@ -208,6 +237,9 @@ public class UserController {
             }
             if (findOfUsers.isEmpty()) {
                 model.addAttribute("error", "Пользователь с email '" + email + "' не найден.");
+                session.setAttribute("error", "Пользователь с email '" + email + "' не найден.");
+                if(session.getAttribute("conversation") != null)
+                    model.addAttribute("conversation", session.getAttribute("conversation"));
                 model.addAttribute("users", findOfUsers);
                 session.setAttribute("users", findOfUsers);
                 model.addAttribute("user", userService.getInMemoryUser());
@@ -215,20 +247,34 @@ public class UserController {
                 model.addAttribute("currentPage", page);  // Текущая страница
                 model.addAttribute("totalPages", usersPage.getTotalPages());  // Общее количество страниц
                 model.addAttribute("totalItems", usersPage.getTotalElements());
+                model.addAttribute("sort", sort);
+                if (ListUsersForAddConversation != null)
+                    model.addAttribute("ListUsersForAddConversationSize",
+                            ListUsersForAddConversation.size());
+                else model.addAttribute("ListUsersForAddConversationSize", 0);
             }
             else {
+                session.setAttribute("error", null);
                 model.addAttribute("users", findOfUsers);
                 session.setAttribute("users", findOfUsers);
                 model.addAttribute("user", userService.getInMemoryUser());
+                if(session.getAttribute("conversation") != null)
+                    model.addAttribute("conversation", session.getAttribute("conversation"));
                 model.addAttribute("allUsers", findOfUsers);
                 model.addAttribute("currentPage", page);
                 model.addAttribute("totalPages", usersPage.getTotalPages());
                 model.addAttribute("totalItems", usersPage.getTotalElements());
+                model.addAttribute("sort", sort);
+                if (ListUsersForAddConversation != null)
+                    model.addAttribute("ListUsersForAddConversationSize",
+                            ListUsersForAddConversation.size());
+                else model.addAttribute("ListUsersForAddConversationSize", 0);
             }
             return "users";
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("error", "Ошибка при поиске пользователя: " + e.getMessage()); // Более информативное сообщение
+            session.setAttribute("error", "Ошибка при поиске пользователя: " + e.getMessage());
             model.addAttribute("users", new ArrayList<>());
             return "users";
         }

@@ -32,7 +32,7 @@
                 </a>
 
                 <div th:id="Search">
-                    <form th:action="@{/api/v1/findByEmail}" method="post">
+                    <form th:action="@{/api/v1/findByEmail(sort=${sort})}" method="post">
                         <label for="email">Email:</label>
                         <input type="text" id="email" name="email">
                         <br>
@@ -43,7 +43,7 @@
                     </div>
                 </div>
                 <ul>
-                    <li th:each="u : ${users}">
+                    <li th:each="u : ${users}" th:if="${users != null}">
                         <div th:id="Transfer">
                             <a th:href="@{/api/v1/users/{id}(id=${u.id})}" th:if="${sort == false}">
                                 <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
@@ -52,7 +52,7 @@
                                 <span th:text="${u.gender.equals('male')} ? 'M' : 'Ж'"></span>
                             </a>
 
-                            <!-- Показываем пользователей при sort == false -->
+                            <!-- Показываем пользователей при добавлении в беседу -->
                             <a th:href="@{/api/v1/users(id=${u.id}, sort=true)}" th:if="${sort == true}">
                                 <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
                                 (<span th:text="${u.email}"></span>)
@@ -61,10 +61,10 @@
                     </li>
                 </ul>
                 <div id="pagination">
-                    <a th:href="@{/api/v1/users(page=${currentPage - 1})}" th:if="${currentPage > 0}"></a>
-                    <a th:href="@{/api/v1/users(page=${currentPage})}" th:if="${currentPage < 1}"></a>
-                    <a th:href="@{/api/v1/users(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}"></a>
-                    <a th:href="@{/api/v1/users(page=${currentPage})}" th:if="${currentPage == totalPages - 1}"></a>
+                    <a th:href="@{/api/v1/users(page=${currentPage - 1}, sort=${sort})}" th:if="${currentPage > 0}"></a>
+                    <a th:href="@{/api/v1/users(page=${currentPage}, sort=${sort})}" th:if="${currentPage < 1}"></a>
+                    <a th:href="@{/api/v1/users(page=${currentPage + 1}, sort=${sort})}" th:if="${currentPage < totalPages - 1}"></a>
+                    <a th:href="@{/api/v1/users(page=${currentPage}, sort=${sort})}" th:if="${currentPage == totalPages - 1}"></a>
                 </div>
             </div>
         </div>
