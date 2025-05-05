@@ -11,14 +11,20 @@
                 <div th:id="UserText">
                     <a th:text="${user != null} ? ${user.getName()} + ' ' + ${user.getLastName()} : 'Войдите в аккаунт'"></a>
                 </div>
-                <div th:id="Entrance">
+                <div th:id="Entrance" th:if="${user == null}">
                     <a th:href="@{/api/v1/entrance}">Аккаунт</a>
                 </div>
-                <div th:id="User">
+                <div th:id="Entrance" th:if="${user != null}">
+                    <a th:href="@{/api/v1/entrance(idOfUserActual=${user.getId()})}">Аккаунт</a>
+                </div>
+                <div th:id="User" th:if="${user == null}">
                     <a th:href="@{/api/v1/users}">Пользователи</a>
                 </div>
+                <div th:id="User" th:if="${user != null}">
+                    <a th:href="@{/api/v1/users(idOfUserActual=${user.getId()})}">Пользователи</a>
+                </div>
                 <div th:if="${user != null}" th:id="historyOfMessages">
-                    <a th:href="@{/api/v1/historyOfMessages}">Истории сообщений</a>
+                    <a th:href="@{/api/v1/historyOfMessages(idOfUserActual=${user.getId()})}">Истории сообщений</a>
                 </div>
             </div>
             <div th:id="GeneralInfo">
@@ -45,7 +51,7 @@
                 <ul>
                     <li th:each="u : ${users}" th:if="${users != null}">
                         <div th:id="Transfer">
-                            <a th:href="@{/api/v1/users/{id}(id=${u.id})}" th:if="${sort == false}">
+                            <a th:href="@{/api/v1/users/{id}(id=${u.id}, idOfUserActual=${user.getId()})}" th:if="${sort == false}">
                                 <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
                                 (<span th:text="${u.email}"></span>)
                                 <span th:text="'возраст - ' + ${u.getAge()}"></span>
@@ -53,7 +59,7 @@
                             </a>
 
                             <!-- Показываем пользователей при добавлении в беседу -->
-                            <a th:href="@{/api/v1/users(id=${u.id}, sort=true)}" th:if="${sort == true}">
+                            <a th:href="@{/api/v1/users(id=${u.id}, idOfUserActual=${user.getId()}}, sort=true)}" th:if="${sort == true}">
                                 <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
                                 (<span th:text="${u.email}"></span>)
                             </a>

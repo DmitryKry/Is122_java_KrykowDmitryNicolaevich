@@ -32,10 +32,14 @@ public class UserController {
                                @RequestParam(defaultValue = "1") int size,
                                @RequestParam(defaultValue = "false") boolean sort,
                                @RequestParam(defaultValue = "0") long id,
+                               @RequestParam(defaultValue = "0") long idOfUserActual,
                                Model model,
                                HttpSession session) {
         List<User> users = new ArrayList<>();
         List<User> findAllUsers = new ArrayList<>();
+        User actualUser = userService.FindAllUsers().stream()
+                .filter(u -> u.getId() == idOfUserActual).findFirst()
+                .orElse(null);
         Page<User> usersPage = userService.FindAllUsers(page, size);
         List<User> ListUsersForAddConversation = null;
         if (sort){
@@ -81,13 +85,14 @@ public class UserController {
         }
         // Если пользователи есть, добавляем их в модель
         if (!users.isEmpty()) {
-            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("user", actualUser);
             if (session.getAttribute("users") == null)
                 model.addAttribute("allUsers", userService.FindAllUsers());
             else model.addAttribute("allUsers", findAllUsers);
             model.addAttribute("users", users);  // Содержимое текущей страницы
             model.addAttribute("currentPage", page);
             model.addAttribute("sort", sort);
+            model.addAttribute("actualUser", actualUser);
             if (ListUsersForAddConversation != null)
                 model.addAttribute("ListUsersForAddConversationSize",
                         ListUsersForAddConversation.size());
@@ -108,16 +113,19 @@ public class UserController {
             model.addAttribute("totalPages", 0);
             model.addAttribute("ListUsersForAddConversationSize", 0);
             model.addAttribute("users", null);
+            model.addAttribute("actualUser", actualUser);
         }
         return "users"; // Возвращаем имя шаблона
     }
 
     // обеспечивает окно для авторизации пользователей
     @GetMapping("/entrance")
-    public String SimpleReturnShape(Model model) {
+    public String SimpleReturnShape(@RequestParam(defaultValue = "0") long idOfUserActual,
+                                    Model model) {
         List<User> users = userService.FindAllUsers();
+        User actualUser = users.stream().filter(u -> u.getId() == idOfUserActual).findFirst().orElse(null);
         if (!users.isEmpty()) {
-            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("user", actualUser);
             model.addAttribute("users", users);
             model.addAttribute("allow", false);
             model.addAttribute("editUser", new User());
@@ -189,10 +197,14 @@ public class UserController {
                                   @RequestParam(defaultValue = "12") int size,
                                   @RequestParam("email") String email,
                                   @RequestParam(defaultValue = "false") boolean sort,
+                                  @RequestParam(defaultValue = "0") long idOfUserActual,
                                   Model model,
                                   HttpSession session) {
         try {
             List<User> ListUsersForAddConversation = null;
+            User actualUser = userService.FindAllUsers().stream()
+                    .filter(u -> u.getId() == idOfUserActual).findFirst()
+                    .orElse(null);
             if (sort){
                 if (session.getAttribute("ListUsersForAddConversation") != null) {
                     ListUsersForAddConversation = ((List<User>) session.getAttribute("ListUsersForAddConversation"));
@@ -202,7 +214,7 @@ public class UserController {
             if(email.isEmpty()){
                 session.setAttribute("users", null);
                 model.addAttribute("users", usersPage.getContent());
-                model.addAttribute("user", userService.getInMemoryUser());
+                model.addAttribute("user", actualUser);
                 model.addAttribute("allUsers", userService.FindAllUsers());
                 model.addAttribute("currentPage", page);  // Текущая страница
                 model.addAttribute("totalPages", usersPage.getTotalPages());  // Общее количество страниц
@@ -242,7 +254,7 @@ public class UserController {
                     model.addAttribute("conversation", session.getAttribute("conversation"));
                 model.addAttribute("users", findOfUsers);
                 session.setAttribute("users", findOfUsers);
-                model.addAttribute("user", userService.getInMemoryUser());
+                model.addAttribute("user", actualUser);
                 model.addAttribute("allUsers", findOfUsers);
                 model.addAttribute("currentPage", page);  // Текущая страница
                 model.addAttribute("totalPages", usersPage.getTotalPages());  // Общее количество страниц
@@ -257,7 +269,7 @@ public class UserController {
                 session.setAttribute("error", null);
                 model.addAttribute("users", findOfUsers);
                 session.setAttribute("users", findOfUsers);
-                model.addAttribute("user", userService.getInMemoryUser());
+                model.addAttribute("user", actualUser);
                 if(session.getAttribute("conversation") != null)
                     model.addAttribute("conversation", session.getAttribute("conversation"));
                 model.addAttribute("allUsers", findOfUsers);
@@ -282,18 +294,23 @@ public class UserController {
 
     // А это маппер для вывода сообщений
     @GetMapping("/users/{id}")
-    public String ShapeFormForId(@PathVariable int id, @RequestParam(defaultValue = "false") boolean allow,
+    public String ShapeFormForId(@PathVariable int id,
+                                 @RequestParam(defaultValue = "false") boolean allow,
+                                 @RequestParam(defaultValue = "0") long idOfUserActual,
                                  Model model, HttpSession session) {
         User userClick = userService.FindUserById(id);
+        User actualUser = userService.FindAllUsers().stream()
+                .filter(u -> u.getId() == idOfUserActual).findFirst()
+                .orElse(null);
         session.setAttribute("companion", userClick);
         String message = "";
-
-        if (userService.getInMemoryUser() == null || ((User) session.getAttribute("companion")).getId()
-                == userService.getInMemoryUser().getId()) {
+        // Условие, которое срабатывает в том случае, если пользователь не авторизовался или нажал на себя
+        if (idOfUserActual == 0 || ((User) session.getAttribute("companion")).getId()
+                == idOfUserActual) {
             Page<User> usersPage = userService.FindAllUsers(0, 10);
             model.addAttribute("users", session.getAttribute("users"));
             session.setAttribute("users", session.getAttribute("users"));
-            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("user", actualUser);
             model.addAttribute("allUsers", session.getAttribute("users"));
             model.addAttribute("currentPage", 0);
             model.addAttribute("totalPages", usersPage.getTotalPages());
@@ -303,18 +320,18 @@ public class UserController {
 
         List<Message> allMessage = userService.getAllOfMessage();
         Message messagesOfUser = allMessage.stream().
-                filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
+                filter(m -> m.getFirstID() == actualUser.getId() &&
                         m.getSecondID() == ((User) session.getAttribute("companion")).getId())
                 .findFirst().orElse(null);
         if (messagesOfUser == null) {
             messagesOfUser = allMessage.stream().
                     filter(m -> m.getFirstID() == ((User) session.getAttribute("companion")).getId() &&
-                            m.getSecondID() == userService.getInMemoryUser().getId())
+                            m.getSecondID() == actualUser.getId())
                     .findFirst().orElse(null);
         }
         if (messagesOfUser == null){
             model.addAttribute("tailOfMessage", new ArrayList<>());
-            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("user", actualUser);
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("conversation", null);
             return "PageOfUser";
@@ -367,7 +384,7 @@ public class UserController {
                 }
             }
             for (int i = tailOfMessage.size() - 1; i >= 0; i--) {
-                if (tailOfMessage.get(i).getFirstID() == userService.getInMemoryUser().getId()){
+                if (tailOfMessage.get(i).getFirstID() == actualUser.getId()){
                     tailOfMessage.remove(i);
                     break;
                 }
@@ -375,7 +392,7 @@ public class UserController {
             userService.DeleteMessage(messagesOfUser.getId());
             User companion = (User) session.getAttribute("companion");
             Message newMessage = new Message();
-            newMessage.setFirstID(userService.getInMemoryUser().getId());
+            newMessage.setFirstID(actualUser.getId());
             newMessage.setSecondID(companion.getId());
             String tempNewMessage = "";
             // Формирую новое сообщение без удалённых блоков сообщений
@@ -390,18 +407,18 @@ public class UserController {
             temp = "";
             allMessage = userService.getAllOfMessage();
             messagesOfUser = allMessage.stream().
-                    filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
+                    filter(m -> m.getFirstID() == actualUser.getId() &&
                             m.getSecondID() == ((User) session.getAttribute("companion")).getId())
                     .findFirst().orElse(null);
             if (messagesOfUser == null) {
                 messagesOfUser = allMessage.stream().
                         filter(m -> m.getFirstID() == ((User) session.getAttribute("companion")).getId() &&
-                                m.getSecondID() == userService.getInMemoryUser().getId())
+                                m.getSecondID() == actualUser.getId())
                         .findFirst().orElse(null);
             }
             if (messagesOfUser == null){
                 model.addAttribute("tailOfMessage", new ArrayList<>());
-                model.addAttribute("user", userService.getInMemoryUser());
+                model.addAttribute("user", actualUser);
                 model.addAttribute("userClick", session.getAttribute("companion"));
                 model.addAttribute("conversation", null);
                 return "PageOfUser";
@@ -433,7 +450,7 @@ public class UserController {
         }
         allow = false;
         model.addAttribute("tailOfMessage", tailOfMessage);
-        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("user", actualUser);
         model.addAttribute("userClick", session.getAttribute("companion"));
         model.addAttribute("allow", allow);
         model.addAttribute("conversation", null);
@@ -448,9 +465,14 @@ public class UserController {
 
     // Я уже начинаю теряться, это маппер для принятия и ввода сообщений
     @PostMapping("/users/message")
-    public String InputMessages(@RequestParam("message") String message, Model model, HttpSession session) {
-        if (userService.getInMemoryUser() == null || ((User) session.getAttribute("companion")) == null){
-            model.addAttribute("user", userService.getInMemoryUser());
+    public String InputMessages(@RequestParam("message") String message,
+                                @RequestParam(defaultValue = "0") long idOfUserActual,
+                                Model model, HttpSession session) {
+        User actualUser = userService.FindAllUsers().stream()
+                .filter(u -> u.getId() == idOfUserActual).findFirst()
+                .orElse(null);
+        if (idOfUserActual == 0 || ((User) session.getAttribute("companion")) == null){
+            model.addAttribute("user", actualUser);
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", null);
             model.addAttribute("conversation", null);
@@ -459,21 +481,21 @@ public class UserController {
         boolean allow = false;
         List<Message> allMessage = userService.getAllOfMessage();
         Message messagesOfUser = allMessage.stream().
-                filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
+                filter(m -> m.getFirstID() == actualUser.getId() &&
                         m.getSecondID() == ((User) session.getAttribute("companion")).getId())
                 .findFirst().orElse(null);
         if (messagesOfUser == null) {
             messagesOfUser = allMessage.stream().
                     filter(m -> m.getFirstID() == ((User) session.getAttribute("companion")).getId() &&
-                            m.getSecondID() == userService.getInMemoryUser().getId())
+                            m.getSecondID() == actualUser.getId())
                     .findFirst().orElse(null);
         }
         if (messagesOfUser  == null) {
             Message newMessage = new Message();
             User companion = (User) session.getAttribute("companion");
-            newMessage.setFirstID(userService.getInMemoryUser().getId());
+            newMessage.setFirstID(actualUser.getId());
             newMessage.setSecondID(companion.getId());
-            newMessage.setMessage(userService.getInMemoryUser().getId() + " " + message + '\n');
+            newMessage.setMessage(actualUser.getId() + " " + message + '\n');
             userService.AddMessage(newMessage);
             List<Message> tailOfMessage = new ArrayList<>();
             Message tempMessages = new Message();
@@ -499,7 +521,7 @@ public class UserController {
                     temp += m;
                 }
             }
-            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("user", actualUser);
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("tailOfMessage", tailOfMessage);
             model.addAttribute("allow", allow);
@@ -509,17 +531,17 @@ public class UserController {
         }
         else {
             userService.UpdateMessage(messagesOfUser.getId(),
-                    userService.getInMemoryUser().getId() + " " + message + '\n');
+                    actualUser.getId() + " " + message + '\n');
             // обновляю список сообщений в allMessage
             allMessage = userService.getAllOfMessage();
             messagesOfUser = allMessage.stream().
-                    filter(m -> m.getFirstID() == userService.getInMemoryUser().getId() &&
+                    filter(m -> m.getFirstID() == actualUser.getId() &&
                             m.getSecondID() == ((User) session.getAttribute("companion")).getId())
                     .findFirst().orElse(null);
             if (messagesOfUser == null) {
                 messagesOfUser = allMessage.stream().
                         filter(m -> m.getFirstID() == ((User) session.getAttribute("companion")).getId() &&
-                                m.getSecondID() == userService.getInMemoryUser().getId())
+                                m.getSecondID() == actualUser.getId())
                         .findFirst().orElse(null);
             }
             List<Message> tailOfMessage = new ArrayList<>();
@@ -548,7 +570,7 @@ public class UserController {
                     temp += m;
                 }
             }
-            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("user", actualUser);
             model.addAttribute("userClick", session.getAttribute("companion"));
             model.addAttribute("conversation", null);
             model.addAttribute("tailOfMessage", tailOfMessage);
@@ -563,15 +585,19 @@ public class UserController {
     public String historyOfMessages(@RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "1") int size,
                                     @RequestParam(defaultValue = "false") boolean openConversation,
+                                    @RequestParam(defaultValue = "0") long idOfUserActual,
                                     Model model, HttpSession session) {
-        if (userService.getInMemoryUser() == null) {
+        User actualUser = userService.FindAllUsers().stream()
+                .filter(u -> u.getId() == idOfUserActual).findFirst()
+                .orElse(null);
+        if (idOfUserActual == 0) {
             return "users";
         }
         if (!openConversation) {
             List<Message> allMessage = userService.getAllOfMessage();
             List<Message> messagesOfUser = allMessage.stream().
-                    filter(message -> message.getFirstID() == userService.getInMemoryUser().getId()
-                    || message.getSecondID() == userService.getInMemoryUser().getId()).toList();
+                    filter(message -> message.getFirstID() == actualUser.getId()
+                    || message.getSecondID() == actualUser.getId()).toList();
             List<User> allUsers = userService.FindAllUsers();
             List<User> findOfUsersForDialog = allUsers.stream().
                     filter(user -> messagesOfUser.stream()
@@ -580,7 +606,7 @@ public class UserController {
                     toList();
             // список который захватывает только сообщения с конкрентным пользователем
             List<User> findOfUsersForDialogMore = findOfUsersForDialog.stream().
-                    filter(user -> user.getId() != userService.getInMemoryUser().getId()).
+                    filter(user -> user.getId() != actualUser.getId()).
                     toList();
             // Добавляю дополнительный список для пагинации
             List<User> users = new ArrayList<>();
@@ -588,7 +614,7 @@ public class UserController {
                 if ((i + page) < findOfUsersForDialogMore.size())
                     users.add(findOfUsersForDialogMore.get(i + page));
             }
-            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("user", actualUser);
             model.addAttribute("users", users);
             session.setAttribute("usersOfHistory", users);
             model.addAttribute("userCount", findOfUsersForDialogMore.size());
@@ -603,7 +629,7 @@ public class UserController {
         }
         else {
             List<MidConversation> midUser = userService.FindAllMidConversations().stream()
-                    .filter(midCon -> midCon.getIdOfUser() == userService.getInMemoryUser().getId())
+                    .filter(midCon -> midCon.getIdOfUser() == actualUser.getId())
                     .toList();
             List<Conversation> convUser = userService.FindAllConversations().stream()
                     .filter(conv -> midUser.stream()
@@ -614,7 +640,7 @@ public class UserController {
                 if ((i + page) < convUser.size())
                     users.add(convUser.get(i + page));
             }
-            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("user", actualUser);
             model.addAttribute("users", users);
             session.setAttribute("usersOfHistory", users);
             model.addAttribute("userCount", convUser.size());
@@ -669,6 +695,7 @@ public class UserController {
     // метод, который активирует окно с допольнительным подтверждением о удалении аккаунта пользователя
     @GetMapping("deleteUser")
     public String deleteUserByEmail(@RequestParam(defaultValue = "false") boolean allow,
+                                    @RequestParam(defaultValue = "0") long idOfUserActual,
                                     Model model) {
         if (allow) {
             model.addAttribute("user", userService.getInMemoryUser());
@@ -687,7 +714,8 @@ public class UserController {
     // само окно с дополнительным поддтверждение о удалении аккаунта пользователя (тут удаляется аккаунт)
     @GetMapping("deleteUser/True")
     public String deleteUserByEmailIfTrue(@RequestParam(defaultValue = "true") boolean allowOfDelete,
-                                    Model model) {
+                                          @RequestParam(defaultValue = "0") long idOfUserActual,
+                                          Model model) {
         if (allowOfDelete) {
             userService.DeleteUser(userService.getInMemoryUser().getEmail());
             model.addAttribute("user", null);
@@ -726,7 +754,8 @@ public class UserController {
 
     // ссылка выводит окно для создания беседы
     @GetMapping("/historyOfMessages/createOfConversion")
-    public String createOfConversion(Model model, HttpSession session) {
+    public String createOfConversion(@RequestParam(defaultValue = "0") long idOfUserActual,
+                                     Model model, HttpSession session) {
         model.addAttribute("createOfConversion", true);
         model.addAttribute("user", userService.getInMemoryUser());
         model.addAttribute("users", session.getAttribute("usersOfHistory"));
@@ -740,6 +769,7 @@ public class UserController {
     @PostMapping("/historyOfMessages/createOfConversionPost")
     public String createOfConversionAction(@RequestParam String nameOfConversion,
                                            @RequestParam boolean AdminIsOwner,
+                                           @RequestParam(defaultValue = "0") long idOfUserActual,
                                            Model model, HttpSession session) {
         Conversation conversation = new Conversation();
         conversation.setNameOfConversation(nameOfConversion);
@@ -768,6 +798,7 @@ public class UserController {
     @PostMapping("/conversation/{id}/sendMessage")
     public String conversionSendMessage(@RequestParam("message") String message,
                                         @PathVariable("id") long id,
+                                        @RequestParam(defaultValue = "0") long idOfUserActual,
                                         Model model, HttpSession session) {
         System.out.println("Запрос получен! ID: " + id + ", сообщение: " + message);
         Conversation newConversation = new Conversation();
@@ -826,7 +857,9 @@ public class UserController {
 
     // сообщения беседы, будут дублированы на примере ShapeFormForId +++
     @GetMapping("/conversation/{id}")
-    public String conversion(@PathVariable long id, @RequestParam(defaultValue = "false") boolean allow,
+    public String conversion(@PathVariable long id,
+                             @RequestParam(defaultValue = "false") boolean allow,
+                             @RequestParam(defaultValue = "0") long idOfUserActual,
                              Model model, HttpSession session) {
         // ищу, есть ли эта беседа вообще
         Conversation conversation = userService.FindAllConversations().stream()
@@ -971,7 +1004,9 @@ public class UserController {
 
     // Метод, который будет демонстрировать список собеседников и представит возможность добавления новых пользователей
     @GetMapping("/conversation/{id}/ListOfUsers")
-    public String getListOfUsers(@PathVariable long id, Model model, HttpSession session) {
+    public String getListOfUsers(@PathVariable long id,
+                                 @RequestParam(defaultValue = "0") long idOfUserActual,
+                                 Model model, HttpSession session) {
         List<User> users = userService.FindAllUsers().stream()
                 .filter(user -> userService.FindAllMidConversations().stream()
                         .anyMatch(midConv -> midConv.getIdOfUser() == user.getId() &&
@@ -998,7 +1033,9 @@ public class UserController {
     }
 
     @GetMapping("/conversation/{id}/addUsers")
-    public String getAddUser(@PathVariable long id, Model model, HttpSession session) {
+    public String getAddUser(@PathVariable long id,
+                             @RequestParam(defaultValue = "0") long idOfUserActual,
+                             Model model, HttpSession session) {
         List<MidConversation> allMidConv = userService.FindAllMidConversations();
         List<User> users = ((List<User>) session.getAttribute("ListUsersForAddConversation"));
         boolean examination = false;

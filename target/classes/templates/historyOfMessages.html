@@ -11,14 +11,20 @@
                 <div th:id="UserText">
                     <a th:text="${user != null} ? ${user.getName()} + ' ' + ${user.getLastName()} : 'Войдите в аккаунт'"></a>
                 </div>
-                <div th:id="Entrance">
+                <div th:id="Entrance" th:if="${user == null}">
                     <a th:href="@{/api/v1/entrance}">Аккаунт</a>
                 </div>
-                <div th:id="User">
+                <div th:id="Entrance" th:if="${user != null}">
+                    <a th:href="@{/api/v1/entrance(idOfUserActual=${user.getId()})}">Аккаунт</a>
+                </div>
+                <div th:id="User" th:if="${user == null}">
                     <a th:href="@{/api/v1/users}">Пользователи</a>
                 </div>
+                <div th:id="User" th:if="${user != null}">
+                    <a th:href="@{/api/v1/users(idOfUserActual=${user.getId()})}">Пользователи</a>
+                </div>
                 <div th:if="${user != null}" th:id="historyOfMessages">
-                    <a th:href="@{/api/v1/historyOfMessages}">Истории сообщений</a>
+                    <a th:href="@{/api/v1/historyOfMessages(idOfUserActual=${user.getId()})}">Истории сообщений</a>
                 </div>
             </div>
             <div th:id="GeneralInfo">
@@ -33,7 +39,7 @@
                 <ul th:if="${users != null && openConversation == false}">
                     <li th:each="u : ${users}">
                         <div th:id="Transfer">
-                            <a th:href="@{/api/v1/users/{id}(id=${u.id})}">
+                            <a th:href="@{/api/v1/users/{id}(id=${u.id}, idOfUserActual=${user.getId()})}">
                                 <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
                                 (<span th:text="${u.email}"></span>)
                                 <span th:text="'возраст - ' + ${u.getAge()}"></span>
@@ -45,14 +51,14 @@
                 <ul th:if="${users != null && openConversation == true}">
                     <li th:each="u : ${users}">
                         <div th:id="Transfer">
-                            <a th:href="@{/api/v1/conversation/{id}(id=${u.getId()})}">
+                            <a th:href="@{/api/v1/conversation/{id}(id=${u.getId()}, idOfUserActual=${user.getId()})}">
                                 <span th:text="${u.getNameOfConversation()}"></span>
                             </a>
                         </div>
                     </li>
                 </ul>
                 <div th:if="${createOfConversion == true}" th:id="createOfConversionForm">
-                    <form th:action="@{/api/v1/historyOfMessages/createOfConversionPost}" method="post">
+                    <form th:action="@{/api/v1/historyOfMessages/createOfConversionPost(idOfUserActual=${user.getId()})}" method="post">
                         <div th:class="form-group">
                             <label for="nameOfConversion">Введите имя для беседы</label>
                             <br>
