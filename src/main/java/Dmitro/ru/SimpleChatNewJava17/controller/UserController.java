@@ -36,6 +36,7 @@ public class UserController {
                                @RequestParam(defaultValue = "0") long idOfUserActual,
                                Model model,
                                HttpSession session) {
+        model.addAttribute("style", session.getAttribute("style"));
         List<User> users = new ArrayList<>();
         List<User> findAllUsers = new ArrayList<>();
         User actualUser = userService.FindAllUsers().stream()
@@ -122,13 +123,17 @@ public class UserController {
     // обеспечивает окно для авторизации пользователей
     @GetMapping("/entrance")
     public String SimpleReturnShape(@RequestParam(defaultValue = "0") long idOfUserActual,
+                                    @RequestParam(defaultValue = "3") long style,
                                     Model model, HttpSession session) {
+        if (style == 3) style = 0;
+        session.setAttribute("style", style);
         List<User> users = userService.FindAllUsers();
         User actualUser = users.stream().filter(u -> u.getId() == idOfUserActual).findFirst().orElse(null);
         if (!users.isEmpty()) {
             model.addAttribute("user", actualUser);
             model.addAttribute("users", users);
             model.addAttribute("allow", false);
+            model.addAttribute("style", style);
             model.addAttribute("editUser", new User());
 
         } else {
@@ -145,8 +150,9 @@ public class UserController {
                                   @RequestParam String password,
                                   Model model,
                                   HttpSession session) {
+        model.addAttribute("style", 3);
         User user = userService.FindUserByEmailAndPassword(email, password);
-
+        model.addAttribute("style", session.getAttribute("style"));
         // 2. Обработка результата
         if (user != null) {
             userService.setInMemoryUser(user);
@@ -177,6 +183,7 @@ public class UserController {
                                Model model,
                                HttpSession session,
                                @RequestParam("testPassword") String testPassword) {
+
         if(!testPassword.equals(newUser.getPassword())) {
             model.addAttribute("error", "Пароли не сходяться!");
             return "registration";
@@ -201,6 +208,7 @@ public class UserController {
                                   @RequestParam(defaultValue = "0") long idOfUserActual,
                                   Model model,
                                   HttpSession session) {
+        model.addAttribute("style", session.getAttribute("style"));
         try {
             List<User> ListUsersForAddConversation = null;
             User actualUser = userService.FindAllUsers().stream()
@@ -299,6 +307,7 @@ public class UserController {
                                  @RequestParam(defaultValue = "false") boolean allow,
                                  @RequestParam(defaultValue = "0") long idOfUserActual,
                                  Model model, HttpSession session) {
+        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
@@ -599,6 +608,7 @@ public class UserController {
                                     @RequestParam(defaultValue = "false") boolean openConversation,
                                     @RequestParam(defaultValue = "0") long idOfUserActual,
                                     Model model, HttpSession session) {
+        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
@@ -708,7 +718,8 @@ public class UserController {
     @GetMapping("deleteUser")
     public String deleteUserByEmail(@RequestParam(defaultValue = "false") boolean allow,
                                     @RequestParam(defaultValue = "0") long idOfUserActual,
-                                    Model model) {
+                                    Model model, HttpSession session) {
+        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
@@ -730,7 +741,8 @@ public class UserController {
     @GetMapping("deleteUser/True")
     public String deleteUserByEmailIfTrue(@RequestParam(defaultValue = "true") boolean allowOfDelete,
                                           @RequestParam(defaultValue = "0") long idOfUserActual,
-                                          Model model) {
+                                          Model model, HttpSession session) {
+        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
@@ -774,6 +786,7 @@ public class UserController {
     @GetMapping("/historyOfMessages/createOfConversion")
     public String createOfConversion(@RequestParam(defaultValue = "0") long idOfUserActual,
                                      Model model, HttpSession session) {
+        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
@@ -888,6 +901,7 @@ public class UserController {
                              @RequestParam(defaultValue = "false") boolean allow,
                              @RequestParam(defaultValue = "0") long idOfUserActual,
                              Model model, HttpSession session) {
+        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
@@ -1042,6 +1056,7 @@ public class UserController {
     public String getListOfUsers(@PathVariable long id,
                                  @RequestParam(defaultValue = "0") long idOfUserActual,
                                  Model model, HttpSession session) {
+        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
@@ -1075,6 +1090,7 @@ public class UserController {
     public String getAddUser(@PathVariable long id, 
                              @RequestParam(defaultValue = "0") long idOfUserActual,
                              Model model, HttpSession session) {
+        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
