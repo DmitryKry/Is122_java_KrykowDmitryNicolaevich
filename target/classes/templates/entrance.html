@@ -45,7 +45,7 @@
                 <div th:id="ActionOverUser" th:if="${user != null}">
                     <H2>Настройки пользователя</H2>
                     <a th:href="@{/api/v1/exitFromAccaunt(allow = true)}">Выход из аккаунта</a>
-                    <a th:href="@{/api/v1/deleteUser(allow = true)}">Удалить пользователя</a>
+                    <a th:href="@{/api/v1/deleteUser(allow = true, idOfUserActual=${user.getId()})}">Удалить пользователя</a>
                     <form th:action="@{/api/v1/updateUser}" method="post" th:object="${editUser}">
                         <h2 th:text="${error != null} ? ${error} : 'Редактирование профиля'"
                             th:style="${error != null} ? 'color: red;' : ''"></h2>
@@ -100,8 +100,8 @@
                     </form>
                     <div th:if="${allowOfDelete == true}" th:id="DeleteOfUser">
                         <h3 style="color: red;">Вы действительно хотите удалить свой аккаунт?</h3>
-                        <a th:href="@{/api/v1/deleteUser/True}" th:id="FirstChoose">Да</a>
-                        <a th:href="@{/api/v1/entrance}">Нет</a>
+                        <a th:href="@{/api/v1/deleteUser/True(idOfUserActual=${user.getId()})}" th:id="FirstChoose">Да</a>
+                        <a th:href="@{/api/v1/entrance(idOfUserActual=${user.getId()})}">Нет</a>
                     </div>
                 </div>
                 <div th:if="${error}" style="color: red;">

@@ -29,16 +29,21 @@
             </div>
             <div th:id="GeneralInfo">
                 <h1 th:text="${userClick != null} ? ${userClick.getName()} + ' '
-                + ${userClick.getLastName()} : ${conversation.getNameOfConversation()}"></h1>
-                <a th:href="@{/api/v1/users/{id}(id=${userClick.getId()}, allow=true)}" class="deleteMessageClick"
+                + ${userClick.getLastName()} : ${conversation.getNameOfConversation()}" th:id="СonversationTitle"></h1>
+
+                <a th:href="@{/api/v1/users/{id}(id=${userClick.getId()}, allow=true,
+                idOfUserActual=${user.getId()})}" class="deleteMessageClick"
                    th:if="${userClick != null}">Удалить сообщение</a>
 
-                <a th:href="@{/api/v1/conversation/{id}/ListOfUsers(id=${conversation.getId()}, allow=true)}"
+                <a th:href="@{/api/v1/conversation/{id}/ListOfUsers(id=${conversation.getId()}, allow=true,
+                idOfUserActual=${user.getId()})}"
                    th:id="usersAddform"
                    th:if="${userClick == null}">Собеседники</a>
 
-                <a th:href="@{/api/v1/conversation/{id}(id=${conversation.getId()}, allow=true)}" class="deleteMessageClick"
+                <a th:href="@{/api/v1/conversation/{id}(id=${conversation.getId()}, allow=true,
+                idOfUserActual=${user.getId()})}" class="deleteMessageClick"
                    th:if="${userClick == null}">Удалить сообщение</a>
+
                 <div id="MessageForm">
                     <ul th:if="${#lists.size(tailOfMessage) > 0}">
                         <li th:each="t : ${tailOfMessage}">
@@ -57,11 +62,13 @@
                         <li class="scroll-spacer"></li> <!-- пустой блок для отступа -->
                     </ul>
                 </div>
-                <form th:action="@{/api/v1/users/message(idOfUserActual=${user.getId()})}" method="post" th:if="${userClick != null}">
+                <form th:action="@{/api/v1/users/{id}/message(idOfUserActual=${user.getId()}, id=${userClick.getId()})}"
+                      method="post" th:if="${userClick != null}">
                     <input th:id="message" type="text" name="message" required>
                     <button th:id="sendMessage" type="submit">Отправить</button>
                 </form>
-                <form th:action="@{/api/v1/conversation/{id}/sendMessage(id=${conversation.getId()})}"
+                <form th:action="@{/api/v1/conversation/{id}/sendMessage(id=${conversation.getId()},
+                idOfUserActual=${user.getId()})}"
                       method="post"
                       th:if="${userClick == null}">
                     <input th:id="message" type="text" name="message" required>
@@ -73,24 +80,33 @@
                         <ul>
                             <li th:each="u : ${users}">
                                 <div th:id="Transfer">
-                                    <a th:href="@{/api/v1/users/{id}(id=${u.id})}">
+                                    <a th:href="@{/api/v1/users/{id}(id=${u.id}, idOfUserActual=${user.getId()})}">
                                         <span th:text="${u.name} + ' ' + ${u.lastName}"></span>
                                     </a>
                                 </div>
                             </li>
                         </ul>
                     </div>
-                    <a th:href="@{/api/v1/conversation/{id}(id=${conversation.getId()}, allow=false)}" class="deleteMessageClick"
+                    <a th:href="@{/api/v1/conversation/{id}(id=${conversation.getId()}, allow=false,
+                    idOfUserActual=${user.getId()})}" class="deleteMessageClick"
                        th:id="cancelAddOfUsers"
                        th:if="${userClick == null}">Отменить</a>
-                    <a th:href="@{/api/v1/users(sort=true)}" class="deleteMessageClick"
+                    <a th:href="@{/api/v1/users(sort=true, idOfUserActual=${user.getId()})}" class="deleteMessageClick"
                        th:id="cancelAddOfUsers"
                        th:if="${userClick == null && allowAddOfUsers == true}">Добавить</a>
                 </div>
             </div>
         </div>
         <script>
-            window.onload = function() {
+            document.addEventListener("visibilitychange", function() {
+                if (document.visibilityState === 'visible') {
+                    console.log("Вкладка стала активной");
+                    window.location.reload(); // Обновляем страницу
+                }
+            });
+        </script>
+        <script>
+        window.onload = function() {
                 const messageContainer = document.getElementById('MessageForm');
                 messageContainer.scrollTop = messageContainer.scrollHeight;
             };

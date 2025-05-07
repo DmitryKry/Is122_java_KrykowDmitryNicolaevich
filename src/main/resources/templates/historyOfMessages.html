@@ -30,12 +30,18 @@
             <div th:id="GeneralInfo">
                 <h2 th:id="COUNT"
                     th:text="'Количество сообщений' + ' - ' + (${users != null} ? ${userCount} : 0)"></h2>
-                <a th:href="@{/api/v1/historyOfMessages(openConversation=${false})}" th:class="createOfConversionButton">
+
+                <a th:href="@{/api/v1/historyOfMessages(openConversation=${false}, idOfUserActual=${user.getId()})}"
+                   th:class="createOfConversionButton">
                     Пользователи</a>
-                <a th:href="@{/api/v1/historyOfMessages/createOfConversion}" th:class="createOfConversionButton">
+
+                <a th:href="@{/api/v1/historyOfMessages/createOfConversion(idOfUserActual=${user.getId()})}"
+                   th:class="createOfConversionButton">
                     Создать беседу</a>
-                <a th:href="@{/api/v1/historyOfMessages(openConversation=${true})}" th:class="createOfConversionButton">
+
+                <a th:href="@{/api/v1/historyOfMessages(openConversation=${true}, idOfUserActual=${user.getId()})}" th:class="createOfConversionButton">
                     Беседы</a>
+
                 <ul th:if="${users != null && openConversation == false}">
                     <li th:each="u : ${users}">
                         <div th:id="Transfer">
@@ -57,8 +63,12 @@
                         </div>
                     </li>
                 </ul>
+
                 <div th:if="${createOfConversion == true}" th:id="createOfConversionForm">
-                    <form th:action="@{/api/v1/historyOfMessages/createOfConversionPost(idOfUserActual=${user.getId()})}" method="post">
+
+                    <form th:action="@{/api/v1/historyOfMessages/createOfConversionPost(idOfUserActual=${user.getId()})}"
+                          method="post">
+
                         <div th:class="form-group">
                             <label for="nameOfConversion">Введите имя для беседы</label>
                             <br>
@@ -74,14 +84,24 @@
                         </div>
                         <button type="submit" class="ButtonPost">Создать беседу</button>
                     </form>
-                    <a th:href="@{/api/v1/historyOfMessages}" th:id="Cancel">Отменить</a>
+
+                    <a th:href="@{/api/v1/historyOfMessages(idOfUserActual=${user.getId()})}" th:id="Cancel">Отменить</a>
                 </div>
+
                 <div id="pagination">
-                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage - 1})}" th:if="${currentPage > 0}"></a>
-                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage})}" th:if="${currentPage < 1}"></a>
-                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}"></a>
-                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage})}" th:if="${currentPage == totalPages - 1}"></a>
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage - 1}, idOfUserActual=${user.getId()})}" th:if="${currentPage > 0}"></a>
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage}, idOfUserActual=${user.getId()})}" th:if="${currentPage < 1}"></a>
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage + 1}, idOfUserActual=${user.getId()})}" th:if="${currentPage < totalPages - 1}"></a>
+                    <a th:href="@{/api/v1/historyOfMessages(page=${currentPage}, idOfUserActual=${user.getId()})}" th:if="${currentPage == totalPages - 1}"></a>
                 </div>
+                <script>
+                    document.addEventListener("visibilitychange", function() {
+                        if (document.visibilityState === 'visible') {
+                            console.log("Вкладка стала активной");
+                            window.location.reload(); // Обновляем страницу
+                        }
+                    });
+                </script>
             </div>
         </div>
     </body>
