@@ -684,7 +684,6 @@ public class UserController {
                              HttpSession session,
                              @RequestParam(defaultValue = "0") long idOfUserActual,
                              @RequestParam("testPassword") String testPassword) {
-
         if(!testPassword.equals(updatedUser.getPassword())) {
             model.addAttribute("error", "Пароли не сходяться!");
             return "redirect:/api/v1/entrance?idOfUserActual=" + idOfUserActual;
@@ -707,7 +706,6 @@ public class UserController {
             model.addAttribute("editUser", updatedUser); // сохранить данные при возврате
             return "redirect:/api/v1/entrance?idOfUserActual=" + idOfUserActual;
         }
-
         userService.UpdateUser(updatedUser);
         session.setAttribute("editUser", updatedUser);
         model.addAttribute("editUser", updatedUser);

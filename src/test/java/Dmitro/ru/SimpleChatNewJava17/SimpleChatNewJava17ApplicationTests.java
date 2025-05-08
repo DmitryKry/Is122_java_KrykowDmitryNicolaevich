@@ -163,11 +163,8 @@ class SimpleChatNewJava17ApplicationTests {
 		assertEquals("users", viewName);  // Ожидаем, что вернется представление users// Проверяем размер списка для добавления в разговор (будет 0)
 	}
 
-	@Mock
-	private MessageRepository messageRepository;
-
 	@Test
-	void testInputMessages() throws Exception {
+	void testInputMessages() {
 
 		String message = "Hello world";
 		long idOfUserActual = 10;
