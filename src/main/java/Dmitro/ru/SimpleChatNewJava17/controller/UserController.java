@@ -682,36 +682,39 @@ public class UserController {
     public String updateUser(@ModelAttribute("editUser") User updatedUser,
                              Model model,
                              HttpSession session,
+                             @RequestParam(defaultValue = "0") long idOfUserActual,
                              @RequestParam("testPassword") String testPassword) {
 
         if(!testPassword.equals(updatedUser.getPassword())) {
             model.addAttribute("error", "Пароли не сходяться!");
-            return "entrance";
+            return "redirect:/api/v1/entrance?idOfUserActual=" + idOfUserActual;
         }
         User existingUser = userService.FindUserById(updatedUser.getId());
-
+        User actualUser = userService.FindAllUsers().stream()
+                .filter(u -> u.getId() == idOfUserActual).findFirst()
+                .orElse(null);
 
         if (existingUser == null) {
             model.addAttribute("error", "Пользователь не найден!");
-            return "entrance";
+            return "redirect:/api/v1/entrance?idOfUserActual=" + idOfUserActual;
         }
 
         // Проверка на email: если новый email уже занят другим
         User userWithSameEmail = userService.FindUserByEmail(updatedUser.getEmail());
         if (userWithSameEmail != null && (userWithSameEmail.getId() != updatedUser.getId())) {
-            model.addAttribute("user", userService.getInMemoryUser());
+            model.addAttribute("user", actualUser);
             model.addAttribute("error", "Email уже используется другим пользователем!");
             model.addAttribute("editUser", updatedUser); // сохранить данные при возврате
-            return "entrance";
+            return "redirect:/api/v1/entrance?idOfUserActual=" + idOfUserActual;
         }
 
         userService.UpdateUser(updatedUser);
         session.setAttribute("editUser", updatedUser);
         model.addAttribute("editUser", updatedUser);
-        model.addAttribute("user", userService.getInMemoryUser());
+        model.addAttribute("user", actualUser);
         model.addAttribute("allow", false);
         model.addAttribute("allowOfDelete", false);// обновляем пользователя в сессии
-        return "entrance"; // редирект на профиль
+        return "redirect:/api/v1/entrance?idOfUserActual=" + idOfUserActual;
     }
 
     // метод, который активирует окно с допольнительным подтверждением о удалении аккаунта пользователя
@@ -752,13 +755,13 @@ public class UserController {
             model.addAttribute("allow", false);
             model.addAttribute("allowOfDelete", true);
             model.addAttribute("editUser", new User());
-            return "entrance"; // страница после успешного входа
+            return "redirect:/api/v1/entrance"; // страница после успешного входа
         }
         model.addAttribute("user", null);
         model.addAttribute("editUser", new User());
         model.addAttribute("allow", false);
         model.addAttribute("allowOfDelete", false);
-        return "entrance";
+        return "redirect:/api/v1/entrance";
     }
 
     // ссылка для выхода из аккаунта пользователя
@@ -779,7 +782,7 @@ public class UserController {
         model.addAttribute("editUser", new User());
         model.addAttribute("allow", allow);
         model.addAttribute("allowOfDelete", false);
-        return "entrance";
+        return "redirect:/api/v1/entrance";
     }
 
     // ссылка выводит окно для создания беседы
@@ -1011,7 +1014,10 @@ public class UserController {
                             tempMessages.setSecondID(0);
                             tempMessages.setFirstID(Integer.parseInt(temp));
                             User user = userService.FindUserById(tempMessages.getFirstID());
-                            userNames.put(tempMessages.getFirstID(), user.getName() + " " + user.getLastName());
+                            if (user == null)
+                                userNames.put(tempMessages.getFirstID(), "ERROR");
+                            else
+                                userNames.put(tempMessages.getFirstID(), user.getName() + " " + user.getLastName());
                             temp = "";
                             check = true;
                             continue;
