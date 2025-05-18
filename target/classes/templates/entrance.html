@@ -63,7 +63,7 @@
                     <H2>Настройки пользователя</H2>
                     <a th:href="@{/api/v1/exitFromAccaunt(allow = true)}">Выход из аккаунта</a>
                     <a th:href="@{/api/v1/deleteUser(allow = true, idOfUserActual=${user.getId()})}">Удалить пользователя</a>
-                    <form th:action="@{/api/v1/updateUser}" method="post" th:object="${editUser}">
+                    <form th:action="@{/api/v1/updateUser(idOfUserActual=${user.getId()})}" method="post" th:object="${editUser}">
                         <h2 th:text="${error != null} ? ${error} : 'Редактирование профиля'"
                             th:style="${error != null} ? 'color: red;' : ''"></h2>
 
