@@ -36,12 +36,12 @@ public class UserController {
                                @RequestParam(defaultValue = "0") long idOfUserActual,
                                Model model,
                                HttpSession session) {
-        model.addAttribute("style", session.getAttribute("style"));
         List<User> users = new ArrayList<>();
         List<User> findAllUsers = new ArrayList<>();
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         Page<User> usersPage = userService.FindAllUsers(page, size);
         List<User> ListUsersForAddConversation = null;
         if (sort){

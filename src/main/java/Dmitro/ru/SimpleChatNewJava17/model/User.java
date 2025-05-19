@@ -2,6 +2,7 @@ package Dmitro.ru.SimpleChatNewJava17.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -24,6 +25,8 @@ public class User {
     @Column(unique = true)
     private String email;
     private String password;
+    private long colorStyle = 0;
+    private boolean circleInput = true;
     @Transient
     private int age;
 
