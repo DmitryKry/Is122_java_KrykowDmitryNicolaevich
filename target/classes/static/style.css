@@ -122,23 +122,99 @@ a{
     border-radius: 25% / 100%;
 }
 
-#MenuBlack > div > a:hover{
+#MenuRed{
+    width: 100%;
+    border-bottom: 1px solid black;
+    height: 50px;
+    position: fixed; /* Лучше fixed для меню */
+    top: 0.1%; /* Фиксируем вверху */
+    left: 0%;
+    margin-bottom: 4%;
+    background: red;
+    z-index: 1000;
+    transition: 0.5s;
+}
+
+#MenuRed:hover{
+    box-shadow: 0px 0px 10px black;
+}
+
+#MenuRed > div:hover{
+    background-color: red;
+    color: black;
+    transform: translateY(-2.5px)
+}
+
+#MenuRed > div{
+    top: 7px;
+    transition: 0.5s;
+    border: 1px solid white;
+    background-color: black;
+    height: auto;
+    border-radius: 25% / 100%;
+    color: white;
+    width: auto;
+    position: fixed;
+}
+
+#MenuRed > div > a{
+    display: inline-block;
+    color: red;
+    width: auto;
+    user-select: none;
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 25% / 100%;
+}
+
+#MenuRed > div > a:hover{
     color: black;
 }
 
-#MenuBlack #Entrance{
+#MenuBlack #Entrance,
+#MenuRed #Entrance{
     margin-left: 90%;
 }
 
-#MenuBlack #User{
+#MenuBlack #User,
+#MenuRed #User{
     margin-left: 70%;
 }
 
-#MenuBlack #UserText{
+#MenuBlack #UserText,
+#MenuRed #UserText{
     margin-left: 47%;
 }
 
-#MenuBlack #historyOfMessages{
+#MenuBlack #historyOfMessages,
+#MenuRed #historyOfMessages{
+    margin-left: 15%;
+}
+
+#MenuBlack > div > a:hover,
+#MenuRed > div > a:hover{
+    color: black;
+}
+
+#MenuBlack #Entrance,
+#MenuRed #Entrance{
+    margin-left: 90%;
+}
+
+#MenuBlack #User,
+#MenuRed #User{
+    margin-left: 70%;
+}
+
+#MenuBlack #UserText,
+#MenuRed #UserText{
+    margin-left: 47%;
+}
+
+#MenuBlack #historyOfMessages,
+#MenuRed #historyOfMessages{
     margin-left: 15%;
 }
 
@@ -545,4 +621,34 @@ a{
 #passwordForm{
     margin-left: -4%;
     padding: 3%;
+}
+
+#GeneralInfo #whiteInput,
+#GeneralInfo #blackInput,
+#GeneralInfo #redInput{
+    position: fixed;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 100% / 100%;
+    border: black solid 1px;
+    bottom: 3%;
+}
+#GeneralInfo #whiteInput:hover,
+#GeneralInfo #blackInput:hover,
+#GeneralInfo #redInput:hover{
+    width: 21px;
+    height: 21px;
+}
+
+#GeneralInfo #whiteInput{
+    left: 49%
+}
+#GeneralInfo #blackInput{
+    left: 51%;
+    background-color: black;
+}
+#GeneralInfo #redInput{
+    left: 47%;
+    background-color: red;
 }

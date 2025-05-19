@@ -123,17 +123,25 @@ public class UserController {
     // обеспечивает окно для авторизации пользователей
     @GetMapping("/entrance")
     public String SimpleReturnShape(@RequestParam(defaultValue = "0") long idOfUserActual,
-                                    @RequestParam(defaultValue = "3") long style,
+                                    @RequestParam(defaultValue = "4") long style,
                                     Model model, HttpSession session) {
         session.setAttribute("style", style);
         List<User> users = userService.FindAllUsers();
         User actualUser = users.stream().filter(u -> u.getId() == idOfUserActual).findFirst().orElse(null);
         if (!users.isEmpty()) {
             model.addAttribute("user", actualUser);
-            actualUser.setColorStyle(style);
+            if (actualUser != null) {
+                if (style != 4) {
+                    actualUser.setColorStyle(style);
+                    userService.SaveUser(actualUser);
+                }
+                model.addAttribute("style", actualUser.getColorStyle());
+            }
+            else {
+                model.addAttribute("style", 0);
+            }
             model.addAttribute("users", users);
             model.addAttribute("allow", false);
-            model.addAttribute("style", style);
             model.addAttribute("editUser", new User());
 
         } else {
@@ -159,6 +167,7 @@ public class UserController {
             session.setAttribute("user", user);
             model.addAttribute("allow", false);
             model.addAttribute("editUser", new User());
+            model.addAttribute("style", user.getColorStyle());
             return "entrance"; // страница после успешного входа
         } else {
             model.addAttribute("error", "Неверный email или пароль");
@@ -486,7 +495,7 @@ public class UserController {
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
-        model.addAttribute("style", actualUser.getColorStyle());
+        if (actualUser != null) model.addAttribute("style", actualUser.getColorStyle());
         if (idOfUserActual == 0 || ((User) session.getAttribute("companion")) == null){
             model.addAttribute("user", actualUser);
             model.addAttribute("userClick", session.getAttribute("companion"));
@@ -688,15 +697,17 @@ public class UserController {
             model.addAttribute("error", "Пароли не сходяться!");
             return "redirect:/api/v1/entrance?idOfUserActual=" + idOfUserActual;
         }
-        User existingUser = userService.FindUserById(updatedUser.getId());
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        if (updatedUser.getEmail() != null) actualUser.setEmail(updatedUser.getEmail());
+        if (updatedUser.getCity() != null) actualUser.setCity(updatedUser.getCity());
+        if (updatedUser.getName() != null) actualUser.setName(updatedUser.getName());
+        if (updatedUser.getPassword() != null) actualUser.setPassword(updatedUser.getPassword());
+        if (updatedUser.getLastName() != null) actualUser.setLastName(updatedUser.getLastName());
+        if (updatedUser.getDateOfBirth() != null) actualUser.setDateOfBirth(updatedUser.getDateOfBirth());
+        if (updatedUser.getGender() != null) actualUser.setGender(updatedUser.getGender());
         model.addAttribute("style", actualUser.getColorStyle());
-        if (existingUser == null) {
-            model.addAttribute("error", "Пользователь не найден!");
-            return "redirect:/api/v1/entrance?idOfUserActual=" + idOfUserActual;
-        }
 
         // Проверка на email: если новый email уже занят другим
         User userWithSameEmail = userService.FindUserByEmail(updatedUser.getEmail());
@@ -706,7 +717,7 @@ public class UserController {
             model.addAttribute("editUser", updatedUser); // сохранить данные при возврате
             return "redirect:/api/v1/entrance?idOfUserActual=" + idOfUserActual;
         }
-        userService.UpdateUser(updatedUser);
+        userService.SaveUser(actualUser);
         session.setAttribute("editUser", updatedUser);
         model.addAttribute("editUser", updatedUser);
         model.addAttribute("user", actualUser);
@@ -775,6 +786,7 @@ public class UserController {
                 model.addAttribute("allow", allow);
                 model.addAttribute("allowOfDelete", false);
                 model.addAttribute("editUser", new User());
+                model.addAttribute("style", 0);
                 return "entrance"; // страница после успешного входа
             }
         }
@@ -782,6 +794,7 @@ public class UserController {
         model.addAttribute("editUser", new User());
         model.addAttribute("allow", allow);
         model.addAttribute("allowOfDelete", false);
+        model.addAttribute("style", 0);
         return "redirect:/api/v1/entrance";
     }
 

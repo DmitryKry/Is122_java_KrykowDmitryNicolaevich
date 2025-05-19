@@ -41,6 +41,23 @@
                     <a th:href="@{/api/v1/historyOfMessages(idOfUserActual=${user.getId()})}">Истории сообщений</a>
                 </div>
             </div>
+            <div th:id="MenuRed" th:if="${style == 2}">
+                <div th:id="UserText">
+                    <a th:text="${user != null} ? ${user.getName()} + ' ' + ${user.getLastName()} : 'Войдите в аккаунт'"></a>
+                </div>
+                <div th:id="Entrance" th:if="${user == null}">
+                    <a th:href="@{/api/v1/entrance}">Аккаунт</a>
+                </div>
+                <div th:id="Entrance" th:if="${user != null}">
+                    <a th:href="@{/api/v1/entrance(idOfUserActual=${user.getId()})}">Аккаунт</a>
+                </div>
+                <div th:id="User" th:if="${user != null}">
+                    <a th:href="@{/api/v1/users(idOfUserActual=${user.getId()})}">Пользователи</a>
+                </div>
+                <div th:if="${user != null}" th:id="historyOfMessages">
+                    <a th:href="@{/api/v1/historyOfMessages(idOfUserActual=${user.getId()})}">Истории сообщений</a>
+                </div>
+            </div>
             <div th:id="GeneralInfo">
                 <form th:action="@{/api/v1/registration}" method="post" th:object="${newUser}">
                     <h2 th:text="${error != null} ? ${error} : 'Регистрация'"

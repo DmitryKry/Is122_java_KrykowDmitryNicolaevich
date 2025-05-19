@@ -167,15 +167,15 @@ class SimpleChatNewJava17ApplicationTests {
 	void testInputMessages() {
 
 		String message = "Hello world";
-		long idOfUserActual = 10;
+		long idOfUserActual = 552;
 		User actualUser = new User();
 		actualUser.setId(idOfUserActual);
-		actualUser.setEmail("test@examplee.com");
-		int id = 5;
+		actualUser.setEmail("denis.sidorov1747678960410@mail.ru");
+		int id = 553;
 		Message newMessage = new Message();
 		User companion = new User();
 		companion.setId(id);
-		companion.setEmail("companion@example.com");
+		companion.setEmail("anna.morozova1747678960441@mail.ru");
 		newMessage.setFirstID(actualUser.getId());
 		newMessage.setSecondID(companion.getId());
 		newMessage.setMessage(actualUser.getId() + " " + message + '\n');
