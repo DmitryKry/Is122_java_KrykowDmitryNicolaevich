@@ -125,12 +125,12 @@ public class UserController {
     public String SimpleReturnShape(@RequestParam(defaultValue = "0") long idOfUserActual,
                                     @RequestParam(defaultValue = "3") long style,
                                     Model model, HttpSession session) {
-        if (style == 3) style = 0;
         session.setAttribute("style", style);
         List<User> users = userService.FindAllUsers();
         User actualUser = users.stream().filter(u -> u.getId() == idOfUserActual).findFirst().orElse(null);
         if (!users.isEmpty()) {
             model.addAttribute("user", actualUser);
+            actualUser.setColorStyle(style);
             model.addAttribute("users", users);
             model.addAttribute("allow", false);
             model.addAttribute("style", style);
@@ -150,7 +150,6 @@ public class UserController {
                                   @RequestParam String password,
                                   Model model,
                                   HttpSession session) {
-        model.addAttribute("style", 3);
         User user = userService.FindUserByEmailAndPassword(email, password);
         model.addAttribute("style", session.getAttribute("style"));
         // 2. Обработка результата
@@ -208,12 +207,12 @@ public class UserController {
                                   @RequestParam(defaultValue = "0") long idOfUserActual,
                                   Model model,
                                   HttpSession session) {
-        model.addAttribute("style", session.getAttribute("style"));
         try {
             List<User> ListUsersForAddConversation = null;
             User actualUser = userService.FindAllUsers().stream()
                     .filter(u -> u.getId() == idOfUserActual).findFirst()
                     .orElse(null);
+            model.addAttribute("style", actualUser.getColorStyle());
             if (sort){
                 if (session.getAttribute("ListUsersForAddConversation") != null) {
                     ListUsersForAddConversation = ((List<User>) session.getAttribute("ListUsersForAddConversation"));
@@ -307,10 +306,10 @@ public class UserController {
                                  @RequestParam(defaultValue = "false") boolean allow,
                                  @RequestParam(defaultValue = "0") long idOfUserActual,
                                  Model model, HttpSession session) {
-        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         User userClick = userService.FindUserById(id);
         if (userClick == null) {
             return "redirect:/api/v1/users?idOfUserActual=" + idOfUserActual;
@@ -487,6 +486,7 @@ public class UserController {
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         if (idOfUserActual == 0 || ((User) session.getAttribute("companion")) == null){
             model.addAttribute("user", actualUser);
             model.addAttribute("userClick", session.getAttribute("companion"));
@@ -608,10 +608,10 @@ public class UserController {
                                     @RequestParam(defaultValue = "false") boolean openConversation,
                                     @RequestParam(defaultValue = "0") long idOfUserActual,
                                     Model model, HttpSession session) {
-        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         if (idOfUserActual == 0) {
             return "users";
         }
@@ -684,7 +684,7 @@ public class UserController {
                              HttpSession session,
                              @RequestParam(defaultValue = "0") long idOfUserActual,
                              @RequestParam("testPassword") String testPassword) {
-        if(!testPassword.equals(updatedUser.getPassword())) {
+        if (!testPassword.equals(updatedUser.getPassword())) {
             model.addAttribute("error", "Пароли не сходяться!");
             return "redirect:/api/v1/entrance?idOfUserActual=" + idOfUserActual;
         }
@@ -692,7 +692,7 @@ public class UserController {
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
-
+        model.addAttribute("style", actualUser.getColorStyle());
         if (existingUser == null) {
             model.addAttribute("error", "Пользователь не найден!");
             return "redirect:/api/v1/entrance?idOfUserActual=" + idOfUserActual;
@@ -724,6 +724,7 @@ public class UserController {
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         if (allow) {
             model.addAttribute("user", actualUser);
             model.addAttribute("allow", allow);
@@ -747,6 +748,7 @@ public class UserController {
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         if (allowOfDelete) {
             userService.DeleteUser(actualUser.getEmail());
             model.addAttribute("user", null);
@@ -787,10 +789,10 @@ public class UserController {
     @GetMapping("/historyOfMessages/createOfConversion")
     public String createOfConversion(@RequestParam(defaultValue = "0") long idOfUserActual,
                                      Model model, HttpSession session) {
-        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         model.addAttribute("createOfConversion", true);
         model.addAttribute("user", actualUser);
         model.addAttribute("users", session.getAttribute("usersOfHistory"));
@@ -809,6 +811,7 @@ public class UserController {
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         Conversation conversation = new Conversation();
         conversation.setNameOfConversation(nameOfConversion);
         conversation.setIDOwner(actualUser.getId());
@@ -841,6 +844,7 @@ public class UserController {
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         System.out.println("Запрос получен! ID: " + id + ", сообщение: " + message);
         Conversation newConversation = new Conversation();
         newConversation.setMessage(actualUser.getId() + " " + message + '\n');
@@ -902,10 +906,10 @@ public class UserController {
                              @RequestParam(defaultValue = "false") boolean allow,
                              @RequestParam(defaultValue = "0") long idOfUserActual,
                              Model model, HttpSession session) {
-        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         // ищу, есть ли эта беседа вообще
         Conversation conversation = userService.FindAllConversations().stream()
                 .filter(conv -> conv.getId() == id).findFirst().orElse(null);
@@ -1060,10 +1064,10 @@ public class UserController {
     public String getListOfUsers(@PathVariable long id,
                                  @RequestParam(defaultValue = "0") long idOfUserActual,
                                  Model model, HttpSession session) {
-        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         List<User> users = userService.FindAllUsers().stream()
                 .filter(user -> userService.FindAllMidConversations().stream()
                         .anyMatch(midConv -> midConv.getIdOfUser() == user.getId() &&
@@ -1094,10 +1098,10 @@ public class UserController {
     public String getAddUser(@PathVariable long id, 
                              @RequestParam(defaultValue = "0") long idOfUserActual,
                              Model model, HttpSession session) {
-        model.addAttribute("style", session.getAttribute("style"));
         User actualUser = userService.FindAllUsers().stream()
                 .filter(u -> u.getId() == idOfUserActual).findFirst()
                 .orElse(null);
+        model.addAttribute("style", actualUser.getColorStyle());
         List<MidConversation> allMidConv = userService.FindAllMidConversations();
         List<User> users = ((List<User>) session.getAttribute("ListUsersForAddConversation"));
         boolean examination = false;
